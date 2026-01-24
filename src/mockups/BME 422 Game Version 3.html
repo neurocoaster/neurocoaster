@@ -1,0 +1,3065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroCoaster: Ride the Action Potential</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a2a 0%, #1a1a4a 50%, #0a0a2a 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        #game-container {
+            width: 100%;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Game Header */
+        .game-header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(0, 50, 100, 0.9), rgba(50, 0, 100, 0.9));
+            border-radius: 20px;
+            border: 6px solid #00aaff;
+            box-shadow: 0 0 40px rgba(0, 170, 255, 0.6);
+            position: relative;
+            overflow: hidden;
+        }
+
+        h1 {
+            color: #00ffff;
+            font-size: 3.5em;
+            text-shadow: 0 0 25px #00aaff;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            color: #ffaa00;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        /* Mode Selection */
+        .mode-selection {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .mode-btn {
+            padding: 20px 40px;
+            font-size: 1.2em;
+            background: linear-gradient(135deg, #0066aa, #004488);
+            border: 3px solid #00aaff;
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            min-width: 250px;
+            justify-content: center;
+        }
+
+        .mode-btn:hover {
+            background: linear-gradient(135deg, #0077bb, #005599);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 170, 255, 0.4);
+        }
+
+        /* Multiplayer Setup Modal */
+        .multiplayer-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #0a0a2a, #1a1a4a);
+            padding: 40px;
+            border-radius: 20px;
+            border: 4px solid #00aaff;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 0 50px rgba(0, 170, 255, 0.6);
+        }
+
+        .modal-title {
+            color: #00ffff;
+            font-size: 2em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .player-count-selector {
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .player-count-label {
+            color: #ffaa00;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .player-count-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .count-btn {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #2a2a6a, #1a1a4a);
+            border: 3px solid #5555ff;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .count-btn:hover, .count-btn.selected {
+            background: linear-gradient(135deg, #3a3a8a, #2a2a6a);
+            border-color: #00aaff;
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(0, 170, 255, 0.4);
+        }
+
+        .player-names-input {
+            margin: 30px 0;
+        }
+
+        .player-name-input {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .player-color-dot-input {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid white;
+            flex-shrink: 0;
+        }
+
+        .player-name-input input {
+            flex: 1;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #5555ff;
+            border-radius: 10px;
+            color: white;
+            font-size: 1em;
+        }
+
+        .player-name-input input:focus {
+            outline: none;
+            border-color: #00aaff;
+            box-shadow: 0 0 10px rgba(0, 170, 255, 0.3);
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .modal-btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #0066aa, #004488);
+            border: 3px solid #00aaff;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-btn:hover {
+            background: linear-gradient(135deg, #0077bb, #005599);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 170, 255, 0.3);
+        }
+
+        .modal-btn.cancel {
+            background: linear-gradient(135deg, #aa0000, #880000);
+            border-color: #ff5555;
+        }
+
+        .modal-btn.cancel:hover {
+            background: linear-gradient(135deg, #bb0000, #990000);
+        }
+
+        /* Game Board */
+        #game-board {
+            display: none;
+        }
+
+        .board-game-layout {
+            display: grid;
+            grid-template-columns: 3fr 2fr;
+            gap: 30px;
+            margin-bottom: 30px;
+            min-height: 600px;
+        }
+
+        /* Action Potential Track */
+        #action-potential-track {
+            position: relative;
+            background: rgba(0, 10, 25, 0.95);
+            border-radius: 25px;
+            border: 6px solid #00aaff;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0, 170, 255, 0.4);
+            height: 600px;
+        }
+
+        #apCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        #players-on-track {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* Phase Indicators */
+        .phase-indicators {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .phase-indicator {
+            background: rgba(0, 20, 40, 0.9);
+            padding: 10px 15px;
+            border-radius: 10px;
+            border: 2px solid;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 120px;
+            backdrop-filter: blur(5px);
+            font-size: 0.9em;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .phase-indicator.active {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px;
+        }
+
+        /* Player Character Stage Display */
+        .player-stage-display {
+            position: absolute;
+            top: 80px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .player-stage {
+            background: rgba(0, 20, 40, 0.9);
+            padding: 12px;
+            border-radius: 12px;
+            border: 2px solid;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            min-width: 120px;
+            max-width: 140px;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+        }
+
+        .stage-character {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            border: 2px solid white;
+            transition: all 0.3s;
+        }
+
+        .stage-label {
+            font-size: 0.8em;
+            font-weight: bold;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        .stage-voltage {
+            font-size: 0.7em;
+            color: #aaaaff;
+        }
+
+        /* Progress Section */
+        #progress-section {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(0, 20, 40, 0.9);
+            padding: 15px;
+            border-radius: 15px;
+            border: 3px solid #ff5500;
+            backdrop-filter: blur(5px);
+        }
+
+        .progress-label {
+            color: #ffaa00;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1em;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background: rgba(255, 85, 0, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff5500, #ffaa00);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .progress-details {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #aaaaff;
+            font-size: 0.9em;
+        }
+
+        /* Game Board Panel */
+        .game-board-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* Active Player Section */
+        #active-player-section {
+            background: linear-gradient(135deg, rgba(0, 40, 80, 0.95), rgba(20, 0, 60, 0.95));
+            border-radius: 20px;
+            padding: 25px;
+            border: 4px solid #ff55aa;
+        }
+
+        .active-player-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .active-player-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            border: 4px solid white;
+            box-shadow: 0 0 20px;
+            transition: all 0.3s;
+        }
+
+        .active-player-name {
+            color: #ffffff;
+            margin-bottom: 5px;
+            font-size: 1.4em;
+        }
+
+        .active-player-stage {
+            color: #aaaaff;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .player-score {
+            text-align: right;
+        }
+
+        .score-value {
+            color: #ffaa00;
+            font-size: 2.2em;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 170, 0, 0.5);
+        }
+
+        .score-label {
+            color: #aaaaff;
+            font-size: 0.9em;
+        }
+
+        /* Player Stats */
+        .player-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .player-stat {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .stat-icon {
+            font-size: 1.3em;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 0.8em;
+            color: #cccccc;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            color: white;
+            font-size: 1.6em;
+            font-weight: bold;
+        }
+
+        /* Question Card */
+        #question-card {
+            background: linear-gradient(135deg, rgba(40, 20, 60, 0.95), rgba(60, 0, 40, 0.95));
+            border-radius: 20px;
+            padding: 25px;
+            border: 4px solid #aa55ff;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .question-header h3 {
+            color: #ffffff;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #question-topic {
+            background: rgba(255, 170, 0, 0.3);
+            padding: 8px 15px;
+            border-radius: 25px;
+            font-size: 0.9em;
+            color: #ffaa00;
+            border: 1px solid #ffaa00;
+        }
+
+        .difficulty-badge {
+            background: rgba(0, 170, 255, 0.3);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            color: #00aaff;
+            border: 1px solid #00aaff;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .question-body {
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        #question-text {
+            font-size: 1.3em;
+            line-height: 1.5;
+            color: #ffffff;
+            text-align: center;
+            width: 100%;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Answers Grid */
+        #answers-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .answer-btn {
+            padding: 15px;
+            background: linear-gradient(135deg, #2a2a6a, #1a1a4a);
+            border: 3px solid #5555ff;
+            border-radius: 15px;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 70px;
+        }
+
+        .answer-btn:hover:not(.disabled) {
+            background: linear-gradient(135deg, #3a3a8a, #2a2a6a);
+            border-color: #00aaff;
+            transform: translateY(-3px);
+        }
+
+        .answer-btn.correct {
+            background: linear-gradient(135deg, #00aa00, #008800);
+            border-color: #00ff00;
+        }
+
+        .answer-btn.wrong {
+            background: linear-gradient(135deg, #aa0000, #880000);
+            border-color: #ff0000;
+        }
+
+        .answer-btn.disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Action Buttons */
+        #action-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .action-btn {
+            padding: 15px;
+            background: linear-gradient(135deg, #0066aa, #004488);
+            border: 3px solid #00aaff;
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            background: linear-gradient(135deg, #0077bb, #005599);
+            transform: translateY(-3px);
+        }
+
+        /* Turn Indicator */
+        .turn-indicator {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #ff55aa, #aa55ff);
+            padding: 15px 30px;
+            border-radius: 50px;
+            border: 3px solid white;
+            z-index: 500;
+            display: none;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 0 30px rgba(255, 85, 170, 0.5);
+        }
+
+        .turn-player-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .turn-text {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: white;
+        }
+
+        /* Player Indicators - NEW */
+        .player-indicators {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .player-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .player-color-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 1px solid white;
+        }
+
+        .player-indicator-name {
+            font-size: 0.9em;
+            color: #cccccc;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
+        }
+
+        /* Stage Progress Animation */
+        .stage-progress-animation {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 30px;
+            border-radius: 20px;
+            border: 5px solid;
+            z-index: 1000;
+            display: none;
+            text-align: center;
+            min-width: 400px;
+            box-shadow: 0 0 50px;
+        }
+
+        .stage-transition-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .stage-transition-title {
+            font-size: 2em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .stage-transition-desc {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            color: #cccccc;
+        }
+
+        /* Achievement Popup */
+        .achievement-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, rgba(255, 170, 0, 0.95), rgba(255, 85, 0, 0.95));
+            padding: 30px;
+            border-radius: 20px;
+            border: 5px solid #ffff00;
+            z-index: 1000;
+            display: none;
+            text-align: center;
+            min-width: 350px;
+            box-shadow: 0 0 50px rgba(255, 255, 0, 0.5);
+        }
+
+        .achievement-icon {
+            font-size: 3em;
+            color: #ffffff;
+            margin-bottom: 15px;
+        }
+
+        .achievement-title {
+            color: #ffffff;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .achievement-desc {
+            color: #fff8e1;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .continue-btn {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #0066aa, #004488);
+            border: 3px solid #00aaff;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 0 auto;
+        }
+
+        /* Voltage Labels */
+        .voltage-label {
+            position: absolute;
+            color: #aaaaff;
+            font-size: 0.8em;
+            font-weight: bold;
+            pointer-events: none;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        /* Grid Lines */
+        .grid-line {
+            position: absolute;
+            border-top: 1px dashed rgba(255, 255, 255, 0.2);
+            width: 100%;
+            pointer-events: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .board-game-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            #action-potential-track {
+                height: 400px;
+            }
+            
+            .player-stage-display {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5em;
+            }
+            
+            #answers-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            #action-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .player-stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .achievement-popup,
+            .stage-progress-animation {
+                min-width: 300px;
+                padding: 20px;
+            }
+            
+            .phase-indicators {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .player-stage {
+                min-width: 100px;
+                padding: 8px;
+            }
+            
+            .stage-character {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2em;
+            }
+            
+            .stage-label {
+                font-size: 0.7em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div class="game-header">
+            <h1><i class="fas fa-brain"></i> NEUROCOASTER</h1>
+            <div class="subtitle">Your Character Changes with Each Action Potential Stage!</div>
+            
+            <div class="mode-selection">
+                <button class="mode-btn" onclick="startSinglePlayer()">
+                    <i class="fas fa-user"></i> Single Player
+                </button>
+                <button class="mode-btn" onclick="showMultiplayerSetup()">
+                    <i class="fas fa-users"></i> Multiplayer (2-6 Players)
+                </button>
+            </div>
+        </div>
+
+        <!-- Multiplayer Setup Modal -->
+        <div class="multiplayer-modal" id="multiplayer-modal">
+            <div class="modal-content">
+                <h2 class="modal-title"><i class="fas fa-users"></i> Multiplayer Setup</h2>
+                
+                <div class="player-count-selector">
+                    <span class="player-count-label">Select Number of Players:</span>
+                    <div class="player-count-buttons" id="player-count-buttons">
+                        <button class="count-btn" onclick="selectPlayerCount(2)">2</button>
+                        <button class="count-btn" onclick="selectPlayerCount(3)">3</button>
+                        <button class="count-btn" onclick="selectPlayerCount(4)">4</button>
+                        <button class="count-btn" onclick="selectPlayerCount(5)">5</button>
+                        <button class="count-btn" onclick="selectPlayerCount(6)">6</button>
+                    </div>
+                </div>
+                
+                <div class="player-names-input" id="player-names-input">
+                    <div class="player-name-input" id="player-name-1">
+                        <div class="player-color-dot-input" style="background-color: #ff5555;"></div>
+                        <input type="text" placeholder="Player 1 Name" value="Sodium Rider" maxlength="15">
+                    </div>
+                    <div class="player-name-input" id="player-name-2">
+                        <div class="player-color-dot-input" style="background-color: #55ff55;"></div>
+                        <input type="text" placeholder="Player 2 Name" value="Potassium Rider" maxlength="15">
+                    </div>
+                </div>
+                
+                <div class="modal-buttons">
+                    <button class="modal-btn cancel" onclick="hideMultiplayerSetup()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button class="modal-btn" onclick="startMultiplayer()">
+                        <i class="fas fa-play"></i> Start Game
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Game Board -->
+        <div id="game-board">
+            <div class="board-game-layout">
+                <!-- Action Potential Track -->
+                <div id="action-potential-track">
+                    <canvas id="apCanvas"></canvas>
+                    <div id="players-on-track"></div>
+                    
+                    <!-- Phase Indicators -->
+                    <div class="phase-indicators" id="phase-indicators">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                    
+                    <!-- Player Character Stage Display -->
+                    <div class="player-stage-display" id="player-stage-display">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                    
+                    <!-- Progress Section -->
+                    <div id="progress-section">
+                        <div class="progress-label">
+                            <span><i class="fas fa-wave-square"></i> Action Potential Progress</span>
+                            <span id="progress-percent">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill"></div>
+                        </div>
+                        <div class="progress-details">
+                            <div class="detail-item">
+                                <i class="fas fa-question-circle"></i>
+                                <span>Questions:</span>
+                                <strong id="questions-count">0</strong>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Correct:</span>
+                                <strong id="correct-count">0</strong>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-bullseye"></i>
+                                <span>Current Stage:</span>
+                                <strong id="current-stage">Resting</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Board Panel -->
+                <div class="game-board-panel">
+                    <!-- Active Player Section -->
+                    <div id="active-player-section">
+                        <div class="active-player-info">
+                            <div class="active-player-avatar" id="active-player-avatar">
+                                <i class="fas fa-bed"></i>
+                            </div>
+                            <div style="flex: 1; margin-left: 15px;">
+                                <h3 id="active-player-name">Neuroscientist</h3>
+                                <div class="active-player-stage" id="active-player-stage">
+                                    <i class="fas fa-moon"></i> <span>Resting Neuron (-70 mV)</span>
+                                </div>
+                                <!-- Player Indicators -->
+                                <div class="player-indicators" id="player-indicators">
+                                    <!-- Will be populated by JavaScript -->
+                                </div>
+                            </div>
+                            <div class="player-score">
+                                <div class="score-value" id="active-player-score">-70</div>
+                                <div class="score-label">Membrane Potential (mV)</div>
+                            </div>
+                        </div>
+                        
+                        <div class="player-stats-grid">
+                            <div class="player-stat" style="border-color: #ff5555;">
+                                <div class="stat-icon"><i class="fas fa-door-closed"></i></div>
+                                <div class="stat-label">Na+ Channels</div>
+                                <div class="stat-value" id="na-channels">Closed</div>
+                            </div>
+                            <div class="player-stat" style="border-color: #55ff55;">
+                                <div class="stat-icon"><i class="fas fa-door-closed"></i></div>
+                                <div class="stat-label">K+ Channels</div>
+                                <div class="stat-value" id="k-channels">Closed</div>
+                            </div>
+                            <div class="player-stat" style="border-color: #00ffaa;">
+                                <div class="stat-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                <div class="stat-label">Conduction Speed</div>
+                                <div class="stat-value" id="conduction-speed">1.0x</div>
+                            </div>
+                            <div class="player-stat" style="border-color: #55aaff;">
+                                <div class="stat-icon"><i class="fas fa-fire"></i></div>
+                                <div class="stat-label">Correct Streak</div>
+                                <div class="stat-value" id="current-streak">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Question Card -->
+                    <div id="question-card">
+                        <div class="question-header">
+                            <h3><i class="fas fa-question-circle"></i> Stage Challenge</h3>
+                            <div id="question-topic">Resting Potential</div>
+                            <div class="difficulty-badge" id="difficulty-badge">
+                                <i class="fas fa-chart-line"></i> Stage 1/5
+                            </div>
+                        </div>
+                        
+                        <div class="question-body">
+                            <div id="question-text">
+                                Get ready to begin your action potential journey!
+                            </div>
+                        </div>
+                        
+                        <div id="answers-grid">
+                            <button class="answer-btn" onclick="checkAnswer(0)">Answer A</button>
+                            <button class="answer-btn" onclick="checkAnswer(1)">Answer B</button>
+                            <button class="answer-btn" onclick="checkAnswer(2)">Answer C</button>
+                            <button class="answer-btn" onclick="checkAnswer(3)">Answer D</button>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div id="action-buttons">
+                        <button class="action-btn" onclick="usePowerUp('myelin')">
+                            <i class="fas fa-shield-alt"></i> Add Myelin
+                        </button>
+                        <button class="action-btn" onclick="usePowerUp('boost')">
+                            <i class="fas fa-bolt"></i> Channel Boost
+                        </button>
+                        <button class="action-btn" onclick="skipQuestion()">
+                            <i class="fas fa-forward"></i> Skip Question
+                        </button>
+                        <button class="action-btn" onclick="showHint()">
+                            <i class="fas fa-lightbulb"></i> Get Hint
+                        </button>
+                        <button class="action-btn" onclick="togglePause()">
+                            <i class="fas fa-pause"></i> Pause Game
+                        </button>
+                        <button class="action-btn" onclick="returnToMenu()">
+                            <i class="fas fa-home"></i> Main Menu
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stage Progress Animation -->
+        <div class="stage-progress-animation" id="stage-progress-animation">
+            <div class="stage-transition-icon" id="stage-transition-icon">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <div class="stage-transition-title" id="stage-transition-title">
+                Stage Complete!
+            </div>
+            <div class="stage-transition-desc" id="stage-transition-desc">
+                Advancing to next stage...
+            </div>
+            <button class="continue-btn" onclick="closeStageAnimation()">
+                <i class="fas fa-play"></i> Continue
+            </button>
+        </div>
+
+        <!-- Turn Indicator -->
+        <div class="turn-indicator" id="turn-indicator">
+            <div class="turn-player-color" id="turn-player-color"></div>
+            <div class="turn-text" id="turn-text">Player's Turn!</div>
+        </div>
+
+        <!-- Achievement Popup -->
+        <div class="achievement-popup" id="achievement-popup">
+            <div class="achievement-icon">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <div class="achievement-title" id="achievement-title">Achievement!</div>
+            <div class="achievement-desc" id="achievement-desc">Description here</div>
+            <button class="continue-btn" onclick="closeAchievement()">
+                <i class="fas fa-play"></i> Continue
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // GAME STATE
+        // ============================================
+        const gameState = {
+            gameActive: false,
+            isPaused: false,
+            gameMode: 'single',
+            currentPlayerIndex: 0,
+            players: [],
+            
+            // Action potential stages
+            stages: [
+                {
+                    name: 'resting',
+                    title: 'Resting Neuron',
+                    voltage: -70,
+                    color: '#6666ff',
+                    icon: 'fas fa-bed',
+                    naChannels: 'closed',
+                    kChannels: 'closed',
+                    description: 'Ready to fire!',
+                    questionsNeeded: 3
+                },
+                {
+                    name: 'depolarizing',
+                    title: 'Depolarizing',
+                    voltage: -55,
+                    color: '#ffaa00',
+                    icon: 'fas fa-arrow-up',
+                    naChannels: 'opening',
+                    kChannels: 'closed',
+                    description: 'Na+ channels opening!',
+                    questionsNeeded: 3
+                },
+                {
+                    name: 'peak',
+                    title: 'Action Potential Peak',
+                    voltage: 40,
+                    color: '#ff5555',
+                    icon: 'fas fa-chart-line',
+                    naChannels: 'inactivated',
+                    kChannels: 'opening',
+                    description: 'Maximum voltage!',
+                    questionsNeeded: 3
+                },
+                {
+                    name: 'repolarizing',
+                    title: 'Repolarizing',
+                    voltage: -20,
+                    color: '#55ff55',
+                    icon: 'fas fa-arrow-down',
+                    naChannels: 'inactivated',
+                    kChannels: 'open',
+                    description: 'K+ channels open!',
+                    questionsNeeded: 3
+                },
+                {
+                    name: 'hyperpolarizing',
+                    title: 'After-Hyperpolarization',
+                    voltage: -80,
+                    color: '#aa55ff',
+                    icon: 'fas fa-moon',
+                    naChannels: 'closed',
+                    kChannels: 'closing',
+                    description: 'Refractory period',
+                    questionsNeeded: 3
+                }
+            ],
+            
+            currentStageIndex: 0,
+            stageProgress: 0,
+            
+            // Game progression
+            totalQuestions: 0,
+            totalCorrect: 0,
+            
+            // Current question
+            currentQuestion: null,
+            canAnswer: true,
+            shuffledAnswers: [],
+            correctAnswerIndex: 0,
+            
+            // Track
+            trackPoints: [],
+            
+            // Question tracking - Prevent repetition
+            usedQuestions: [],
+            questionHistory: [],
+            
+            // Multiplayer setup
+            selectedPlayerCount: 2
+        };
+
+        // ============================================
+        // PLAYER COLORS FOR 2-6 PLAYERS
+        // ============================================
+        const playerColors = [
+            '#ff5555', // Red - Player 1
+            '#55ff55', // Green - Player 2
+            '#5555ff', // Blue - Player 3
+            '#ffff55', // Yellow - Player 4
+            '#ff55ff', // Pink - Player 5
+            '#55ffff'  // Cyan - Player 6
+        ];
+
+        const playerIcons = [
+            'fas fa-atom',      // Player 1
+            'fas fa-leaf',      // Player 2
+            'fas fa-brain',     // Player 3
+            'fas fa-bolt',      // Player 4
+            'fas fa-fire',      // Player 5
+            'fas fa-star'       // Player 6
+        ];
+
+        const defaultPlayerNames = [
+            'Sodium Rider',
+            'Potassium Rider',
+            'Calcium Surfer',
+            'Chloride Cruiser',
+            'Neuro Navigator',
+            'Synapse Surfer'
+        ];
+
+        // ============================================
+        // PLAYER CHARACTER STAGES
+        // ============================================
+        const playerStageAppearances = {
+            resting: {
+                shape: 'neuron',
+                color: '#6666ff',
+                icon: 'fas fa-bed',
+                animation: 'pulse',
+                size: 'normal',
+                features: ['dendrites', 'cell-body', 'axon']
+            },
+            depolarizing: {
+                shape: 'neuron-electric',
+                color: '#ffaa00',
+                icon: 'fas fa-bolt',
+                animation: 'vibrate',
+                size: 'expanding',
+                features: ['dendrites', 'cell-body', 'axon', 'electric-arcs']
+            },
+            peak: {
+                shape: 'neuron-fire',
+                color: '#ff5555',
+                icon: 'fas fa-fire',
+                animation: 'pulse-fire',
+                size: 'large',
+                features: ['dendrites', 'cell-body', 'axon', 'fire-effect']
+            },
+            repolarizing: {
+                shape: 'neuron-cooling',
+                color: '#55ff55',
+                icon: 'fas fa-snowflake',
+                animation: 'cooling',
+                size: 'normal',
+                features: ['dendrites', 'cell-body', 'axon', 'cooling-effect']
+            },
+            hyperpolarizing: {
+                shape: 'neuron-recovering',
+                color: '#aa55ff',
+                icon: 'fas fa-moon',
+                animation: 'gentle-pulse',
+                size: 'small',
+                features: ['dendrites', 'cell-body', 'axon', 'recovery-glow']
+            }
+        };
+
+        // ============================================
+        // FIXED QUESTION DATABASE (No "Both A and B" answers)
+        // ============================================
+        const questions = [
+            // Resting stage questions (5 questions)
+            { question: "What is the resting membrane potential of a neuron?", 
+              answers: ["-70 mV", "-55 mV", "+40 mV", "0 mV"], 
+              correct: 0, 
+              stage: "resting" },
+            
+            { question: "Which ion has the highest intracellular concentration in a resting neuron?", 
+              answers: ["Potassium (K+)", "Sodium (Na+)", "Calcium (Ca2+)", "Chloride (Cl-)"], 
+              correct: 0, 
+              stage: "resting" },
+            
+            { question: "The sodium-potassium pump moves how many ions per cycle?", 
+              answers: ["3 Na+ out, 2 K+ in", "2 Na+ out, 3 K+ in", "Equal amounts of both ions", "Only sodium ions outward"], 
+              correct: 0, 
+              stage: "resting" },
+            
+            { question: "What maintains the resting membrane potential?", 
+              answers: ["Na+/K+ ATPase pump", "Leak channels", "Both pump and leak channels", "Voltage-gated channels"], 
+              correct: 2, 
+              stage: "resting" },
+            
+            { question: "Which ion has higher concentration outside the neuron at rest?", 
+              answers: ["Sodium (Na+)", "Potassium (K+)", "Calcium (Ca2+)", "All ions are equal"], 
+              correct: 0, 
+              stage: "resting" },
+            
+            // Depolarizing stage questions (5 questions)
+            { question: "What is the threshold potential for most neurons?", 
+              answers: ["-55 mV", "-70 mV", "+40 mV", "-90 mV"], 
+              correct: 0, 
+              stage: "depolarizing" },
+            
+            { question: "During depolarization, which channels open first?", 
+              answers: ["Voltage-gated Na+ channels", "Voltage-gated K+ channels", "Ligand-gated channels", "Leak channels"], 
+              correct: 0, 
+              stage: "depolarizing" },
+            
+            { question: "The rapid influx of Na+ causes the membrane to become:", 
+              answers: ["More positive", "More negative", "Stays the same", "Unpredictable"], 
+              correct: 0, 
+              stage: "depolarizing" },
+            
+            { question: "What triggers the opening of voltage-gated Na+ channels?", 
+              answers: ["Membrane reaching threshold", "Neurotransmitter binding", "Calcium influx", "ATP hydrolysis"], 
+              correct: 0, 
+              stage: "depolarizing" },
+            
+            { question: "During depolarization, Na+ moves:", 
+              answers: ["Into the cell", "Out of the cell", "Not at all", "Both directions equally"], 
+              correct: 0, 
+              stage: "depolarizing" },
+            
+            // Peak stage questions (5 questions)
+            { question: "What is the peak voltage of an action potential?", 
+              answers: ["+40 mV", "-55 mV", "-70 mV", "+20 mV"], 
+              correct: 0, 
+              stage: "peak" },
+            
+            { question: "At the peak of the action potential, Na+ channels become:", 
+              answers: ["Inactivated", "Closed", "More open", "Reversing direction"], 
+              correct: 0, 
+              stage: "peak" },
+            
+            { question: "What prevents continuous depolarization?", 
+              answers: ["Na+ channel inactivation", "K+ efflux", "Combination of both mechanisms", "Calcium influx"], 
+              correct: 2, 
+              stage: "peak" },
+            
+            { question: "At the peak, which channels begin to open?", 
+              answers: ["Voltage-gated K+ channels", "Voltage-gated Na+ channels", "Ligand-gated channels", "Leak channels"], 
+              correct: 0, 
+              stage: "peak" },
+            
+            { question: "The peak represents the point where:", 
+              answers: ["Na+ influx equals K+ efflux", "Na+ influx stops", "K+ efflux stops", "The membrane is at rest"], 
+              correct: 0, 
+              stage: "peak" },
+            
+            // Repolarizing stage questions (5 questions)
+            { question: "What causes repolarization?", 
+              answers: ["K+ efflux", "Na+ influx", "Ca2+ influx", "Cl- influx"], 
+              correct: 0, 
+              stage: "repolarizing" },
+            
+            { question: "During repolarization, K+ channels are:", 
+              answers: ["Open", "Closed", "Inactivated", "Desensitized"], 
+              correct: 0, 
+              stage: "repolarizing" },
+            
+            { question: "The falling phase of the action potential is due to:", 
+              answers: ["K+ efflux", "Na+ inactivation", "Both mechanisms work together", "Neither mechanism"], 
+              correct: 2, 
+              stage: "repolarizing" },
+            
+            { question: "During repolarization, K+ moves:", 
+              answers: ["Out of the cell", "Into the cell", "Not at all", "In both directions"], 
+              correct: 0, 
+              stage: "repolarizing" },
+            
+            { question: "Repolarization returns the membrane potential toward:", 
+              answers: ["Resting potential", "Threshold potential", "Peak potential", "Equilibrium potential"], 
+              correct: 0, 
+              stage: "repolarizing" },
+            
+            // Hyperpolarizing stage questions (5 questions)
+            { question: "What causes after-hyperpolarization?", 
+              answers: ["Persistent K+ efflux", "Na+ influx", "Ca2+ influx", "Cl- influx"], 
+              correct: 0, 
+              stage: "hyperpolarizing" },
+            
+            { question: "During hyperpolarization, the membrane potential is:", 
+              answers: ["More negative than resting", "More positive than resting", "Same as resting", "Fluctuating rapidly"], 
+              correct: 0, 
+              stage: "hyperpolarizing" },
+            
+            { question: "The refractory period prevents:", 
+              answers: ["Another action potential", "Depolarization", "Repolarization", "All neuronal activity"], 
+              correct: 0, 
+              stage: "hyperpolarizing" },
+            
+            { question: "During the absolute refractory period:", 
+              answers: ["No action potential can occur", "A stronger stimulus can trigger AP", "Only K+ channels are open", "The membrane is depolarized"], 
+              correct: 0, 
+              stage: "hyperpolarizing" },
+            
+            { question: "What happens to K+ channels during hyperpolarization?", 
+              answers: ["They close slowly", "They open rapidly", "They become inactivated", "They reverse direction"], 
+              correct: 0, 
+              stage: "hyperpolarizing" }
+        ];
+
+        // ============================================
+        // MULTIPLAYER SETUP
+        // ============================================
+        function showMultiplayerSetup() {
+            const modal = document.getElementById('multiplayer-modal');
+            modal.style.display = 'flex';
+            
+            // Reset to default 2 players
+            selectPlayerCount(2);
+            
+            // Set default names for all players
+            for (let i = 1; i <= 6; i++) {
+                const nameInput = document.getElementById(`player-name-${i}`);
+                if (nameInput) {
+                    const input = nameInput.querySelector('input');
+                    if (input) {
+                        input.value = defaultPlayerNames[i - 1] || `Player ${i}`;
+                    }
+                }
+            }
+        }
+
+        function hideMultiplayerSetup() {
+            const modal = document.getElementById('multiplayer-modal');
+            modal.style.display = 'none';
+        }
+
+        function selectPlayerCount(count) {
+            gameState.selectedPlayerCount = count;
+            
+            // Update button styles
+            const buttons = document.querySelectorAll('.count-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('selected');
+                if (parseInt(btn.textContent) === count) {
+                    btn.classList.add('selected');
+                }
+            });
+            
+            // Show/hide player name inputs
+            const namesContainer = document.getElementById('player-names-input');
+            
+            // Remove existing inputs beyond count
+            for (let i = count + 1; i <= 6; i++) {
+                const existingInput = document.getElementById(`player-name-${i}`);
+                if (existingInput) {
+                    existingInput.remove();
+                }
+            }
+            
+            // Add inputs for selected count
+            for (let i = 1; i <= count; i++) {
+                if (!document.getElementById(`player-name-${i}`)) {
+                    const nameInput = document.createElement('div');
+                    nameInput.className = 'player-name-input';
+                    nameInput.id = `player-name-${i}`;
+                    nameInput.innerHTML = `
+                        <div class="player-color-dot-input" style="background-color: ${playerColors[i-1]};"></div>
+                        <input type="text" placeholder="Player ${i} Name" value="${defaultPlayerNames[i-1] || `Player ${i}`}" maxlength="15">
+                    `;
+                    namesContainer.appendChild(nameInput);
+                }
+            }
+        }
+
+        // ============================================
+        // GAME MODE SELECTION
+        // ============================================
+        function startSinglePlayer() {
+            gameState.gameMode = 'single';
+            gameState.players = [{
+                id: 'player-1',
+                name: 'Neuroscientist',
+                color: '#00aaff',
+                icon: 'fas fa-brain',
+                score: -70,
+                position: 0,
+                health: 100,
+                myelin: 0,
+                speed: 1.0,
+                currentStreak: 0,
+                maxStreak: 0,
+                questionsAnswered: 0,
+                correctAnswers: 0,
+                currentStage: 'resting',
+                stageProgress: 0,
+                avatarColor: '#00aaff'
+            }];
+            
+            document.getElementById('game-board').style.display = 'block';
+            resetGameState();
+            initGame();
+        }
+
+        function startMultiplayer() {
+            hideMultiplayerSetup();
+            gameState.gameMode = 'multi';
+            gameState.players = [];
+            
+            const playerCount = gameState.selectedPlayerCount;
+            
+            for (let i = 0; i < playerCount; i++) {
+                const playerNameInput = document.getElementById(`player-name-${i+1}`);
+                const playerName = playerNameInput ? playerNameInput.querySelector('input').value.trim() : defaultPlayerNames[i];
+                
+                gameState.players.push({
+                    id: `player-${i+1}`,
+                    name: playerName || defaultPlayerNames[i] || `Player ${i+1}`,
+                    color: playerColors[i],
+                    icon: playerIcons[i],
+                    score: -70,
+                    position: 0,
+                    health: 100,
+                    myelin: 0,
+                    speed: 1.0,
+                    currentStreak: 0,
+                    maxStreak: 0,
+                    questionsAnswered: 0,
+                    correctAnswers: 0,
+                    currentStage: 'resting',
+                    stageProgress: 0,
+                    avatarColor: playerColors[i]
+                });
+            }
+            
+            document.getElementById('game-board').style.display = 'block';
+            resetGameState();
+            initGame();
+        }
+
+        // ============================================
+        // GAME INITIALIZATION
+        // ============================================
+        const canvas = document.getElementById('apCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function initGame() {
+            console.log(`Starting game in ${gameState.gameMode} mode with ${gameState.players.length} players`);
+            
+            resizeCanvas();
+            generateRealisticActionPotentialTrack();
+            initializePhaseIndicators();
+            initializePlayerStageDisplay();
+            
+            gameState.gameActive = true;
+            requestAnimationFrame(gameLoop);
+            
+            if (gameState.gameMode === 'multi') {
+                showTurnIndicator();
+                updatePlayerIndicators();
+            }
+            
+            loadStageQuestion();
+            updateGameUI();
+            updatePlayerCharacter();
+            updatePlayersOnTrack();
+            
+            showAchievement("Action Potential Journey!", "Your character evolves with each stage!");
+        }
+
+        function updatePlayerIndicators() {
+            const indicatorsContainer = document.getElementById('player-indicators');
+            indicatorsContainer.innerHTML = '';
+            
+            gameState.players.forEach((player, index) => {
+                const indicator = document.createElement('div');
+                indicator.className = 'player-indicator';
+                
+                // Highlight current player
+                const isCurrentPlayer = index === gameState.currentPlayerIndex;
+                const fontWeight = isCurrentPlayer ? 'bold' : 'normal';
+                const fontSize = isCurrentPlayer ? '1em' : '0.9em';
+                const textColor = isCurrentPlayer ? player.avatarColor : '#cccccc';
+                
+                indicator.innerHTML = `
+                    <div class="player-color-dot" style="background-color: ${player.avatarColor};"></div>
+                    <span class="player-indicator-name" style="font-weight: ${fontWeight}; font-size: ${fontSize}; color: ${textColor};">
+                        ${player.name} ${isCurrentPlayer ? '✓' : ''}
+                    </span>
+                `;
+                
+                indicatorsContainer.appendChild(indicator);
+            });
+        }
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            generateRealisticActionPotentialTrack();
+        }
+
+        // ============================================
+        // REALISTIC ACTION POTENTIAL TRACK
+        // ============================================
+        function generateRealisticActionPotentialTrack() {
+            gameState.trackPoints = [];
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // Set up voltage ranges for realistic action potential
+            const restingPotential = -70;
+            const thresholdPotential = -55;
+            const peakPotential = 40;
+            const afterHyperpolarization = -80;
+            
+            // Calculate y positions for voltages
+            const voltageRange = peakPotential - afterHyperpolarization; // 40 - (-80) = 120 mV range
+            const pixelsPerMV = (height * 0.6) / voltageRange; // Use 60% of height for the waveform
+            
+            // Baseline is at resting potential (-70 mV)
+            const baselineY = height * 0.7; // Start 70% down
+            
+            // Function to convert voltage to y position
+            const voltageToY = (voltage) => {
+                // Normalize voltage: after-hyperpolarization (-80) should be at bottom
+                const normalizedVoltage = voltage - afterHyperpolarization; // -80 becomes 0, 40 becomes 120
+                return baselineY - (normalizedVoltage * pixelsPerMV);
+            };
+            
+            // Clear track points
+            gameState.trackPoints = [];
+            
+            // PHASE 1: Resting Phase (-70 mV)
+            // Longer resting phase at -70 mV
+            const restingLength = width * 0.15;
+            const restingPoints = 20;
+            for (let i = 0; i < restingPoints; i++) {
+                const x = (i / restingPoints) * restingLength;
+                const y = voltageToY(restingPotential);
+                gameState.trackPoints.push({ x, y, stage: 'resting' });
+            }
+            
+            // PHASE 2: Depolarization to Threshold (-70 mV to -55 mV)
+            // Slow depolarization to threshold
+            const depolarizationStartX = restingLength;
+            const depolarizationLength = width * 0.1;
+            const depolarizationPoints = 15;
+            for (let i = 0; i < depolarizationPoints; i++) {
+                const x = depolarizationStartX + (i / depolarizationPoints) * depolarizationLength;
+                const progress = i / depolarizationPoints;
+                const voltage = restingPotential + (thresholdPotential - restingPotential) * progress;
+                const y = voltageToY(voltage);
+                gameState.trackPoints.push({ x, y, stage: 'depolarizing' });
+            }
+            
+            // PHASE 3: Rapid Depolarization (-55 mV to +40 mV)
+            // Very steep upward slope
+            const rapidDepolStartX = depolarizationStartX + depolarizationLength;
+            const rapidDepolLength = width * 0.08;
+            const rapidDepolPoints = 12;
+            for (let i = 0; i <= rapidDepolPoints; i++) {
+                const x = rapidDepolStartX + (i / rapidDepolPoints) * rapidDepolLength;
+                const progress = i / rapidDepolPoints;
+                // Exponential-like curve for rapid depolarization
+                const voltage = thresholdPotential + (peakPotential - thresholdPotential) * Math.pow(progress, 0.7);
+                const y = voltageToY(voltage);
+                gameState.trackPoints.push({ x, y, stage: 'depolarizing' });
+            }
+            
+            // PHASE 4: Peak (+40 mV)
+            // Brief peak at +40 mV
+            const peakStartX = rapidDepolStartX + rapidDepolLength;
+            const peakLength = width * 0.05;
+            const peakPoints = 8;
+            for (let i = 0; i < peakPoints; i++) {
+                const x = peakStartX + (i / peakPoints) * peakLength;
+                const y = voltageToY(peakPotential);
+                gameState.trackPoints.push({ x, y, stage: 'peak' });
+            }
+            
+            // PHASE 5: Repolarization (+40 mV to -70 mV)
+            // Rapid repolarization, but not as steep as depolarization
+            const repolarizationStartX = peakStartX + peakLength;
+            const repolarizationLength = width * 0.15;
+            const repolarizationPoints = 25;
+            for (let i = 0; i <= repolarizationPoints; i++) {
+                const x = repolarizationStartX + (i / repolarizationPoints) * repolarizationLength;
+                const progress = i / repolarizationPoints;
+                // S-shaped repolarization
+                const voltage = peakPotential + (restingPotential - peakPotential) * progress;
+                const y = voltageToY(voltage);
+                gameState.trackPoints.push({ x, y, stage: 'repolarizing' });
+            }
+            
+            // PHASE 6: After-Hyperpolarization (-70 mV to -80 mV)
+            // Slow dip below resting
+            const hyperpolarizationStartX = repolarizationStartX + repolarizationLength;
+            const hyperpolarizationLength = width * 0.12;
+            const hyperpolarizationPoints = 20;
+            for (let i = 0; i <= hyperpolarizationPoints; i++) {
+                const x = hyperpolarizationStartX + (i / hyperpolarizationPoints) * hyperpolarizationLength;
+                const progress = i / hyperpolarizationPoints;
+                // Smooth curve to after-hyperpolarization
+                const voltage = restingPotential + (afterHyperpolarization - restingPotential) * Math.sin(progress * Math.PI / 2);
+                const y = voltageToY(voltage);
+                gameState.trackPoints.push({ x, y, stage: 'hyperpolarizing' });
+            }
+            
+            // PHASE 7: Recovery to Resting (-80 mV to -70 mV)
+            // Slow recovery back to resting
+            const recoveryStartX = hyperpolarizationStartX + hyperpolarizationLength;
+            const recoveryLength = width * 0.2;
+            const recoveryPoints = 30;
+            for (let i = 0; i <= recoveryPoints; i++) {
+                const x = recoveryStartX + (i / recoveryPoints) * recoveryLength;
+                const progress = i / recoveryPoints;
+                const voltage = afterHyperpolarization + (restingPotential - afterHyperpolarization) * progress;
+                const y = voltageToY(voltage);
+                gameState.trackPoints.push({ x, y, stage: 'hyperpolarizing' });
+            }
+            
+            // Add voltage grid lines and labels
+            addVoltageGrid();
+        }
+
+        function addVoltageGrid() {
+            // Remove any existing grid elements
+            const existingGrid = document.querySelectorAll('.grid-line, .voltage-label');
+            existingGrid.forEach(el => el.remove());
+            
+            const container = document.getElementById('action-potential-track');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // Voltage values to display
+            const voltages = [40, 0, -55, -70, -80];
+            const voltageLabels = ['+40 mV', '0 mV', '-55 mV', '-70 mV', '-80 mV'];
+            
+            // Calculate y positions (same as in generateRealisticActionPotentialTrack)
+            const afterHyperpolarization = -80;
+            const peakPotential = 40;
+            const voltageRange = peakPotential - afterHyperpolarization;
+            const pixelsPerMV = (height * 0.6) / voltageRange;
+            const baselineY = height * 0.7;
+            
+            const voltageToY = (voltage) => {
+                const normalizedVoltage = voltage - afterHyperpolarization;
+                return baselineY - (normalizedVoltage * pixelsPerMV);
+            };
+            
+            // Add grid lines and labels
+            voltages.forEach((voltage, index) => {
+                const y = voltageToY(voltage);
+                
+                // Add grid line
+                const gridLine = document.createElement('div');
+                gridLine.className = 'grid-line';
+                gridLine.style.top = `${y}px`;
+                gridLine.style.borderColor = `rgba(255, 255, 255, ${voltage === -70 ? 0.4 : 0.2})`;
+                gridLine.style.borderWidth = `${voltage === -70 ? '2px' : '1px'}`;
+                gridLine.style.borderStyle = `${voltage === -70 ? 'solid' : 'dashed'}`;
+                container.appendChild(gridLine);
+                
+                // Add voltage label
+                const voltageLabel = document.createElement('div');
+                voltageLabel.className = 'voltage-label';
+                voltageLabel.textContent = voltageLabels[index];
+                voltageLabel.style.left = '10px';
+                voltageLabel.style.top = `${y - 10}px`;
+                voltageLabel.style.color = voltage === -70 ? '#ffaa00' : '#aaaaff';
+                container.appendChild(voltageLabel);
+            });
+            
+            // Add stage labels
+            addStageLabels();
+        }
+
+        function addStageLabels() {
+            const container = document.getElementById('action-potential-track');
+            
+            // Clear existing stage labels
+            const existingLabels = document.querySelectorAll('.stage-label-element');
+            existingLabels.forEach(el => el.remove());
+            
+            // Add labels for each stage at appropriate positions
+            const stages = [
+                { name: 'Resting', xPercent: 0.1, voltage: -70 },
+                { name: 'Threshold', xPercent: 0.25, voltage: -55 },
+                { name: 'Peak', xPercent: 0.38, voltage: 40 },
+                { name: 'Repolarizing', xPercent: 0.55, voltage: -20 },
+                { name: 'AHP', xPercent: 0.75, voltage: -80 }
+            ];
+            
+            stages.forEach(stage => {
+                if (gameState.trackPoints.length > 0) {
+                    const x = gameState.trackPoints[Math.floor(gameState.trackPoints.length * stage.xPercent)].x;
+                    const y = gameState.trackPoints[Math.floor(gameState.trackPoints.length * stage.xPercent)].y;
+                    
+                    const stageLabel = document.createElement('div');
+                    stageLabel.className = 'voltage-label stage-label-element';
+                    stageLabel.textContent = stage.name;
+                    stageLabel.style.left = `${x + 10}px`;
+                    stageLabel.style.top = `${y - 25}px`;
+                    stageLabel.style.color = getStageColor(stage.name.toLowerCase());
+                    stageLabel.style.fontWeight = 'bold';
+                    stageLabel.style.fontSize = '0.9em';
+                    stageLabel.style.background = 'rgba(0, 0, 0, 0.7)';
+                    stageLabel.style.padding = '4px 8px';
+                    stageLabel.style.borderRadius = '8px';
+                    stageLabel.style.border = `2px solid ${getStageColor(stage.name.toLowerCase())}`;
+                    
+                    container.appendChild(stageLabel);
+                }
+            });
+        }
+
+        function getStageColor(stageName) {
+            switch(stageName) {
+                case 'resting': return '#6666ff';
+                case 'threshold': return '#ffaa00';
+                case 'peak': return '#ff5555';
+                case 'repolarizing': return '#55ff55';
+                case 'ahp': return '#aa55ff';
+                default: return '#ffffff';
+            }
+        }
+
+        function initializePhaseIndicators() {
+            const container = document.getElementById('phase-indicators');
+            container.innerHTML = '';
+            
+            gameState.stages.forEach((stage, index) => {
+                const indicator = document.createElement('div');
+                indicator.className = 'phase-indicator';
+                indicator.id = `phase-${stage.name}`;
+                indicator.style.borderColor = stage.color;
+                indicator.style.color = stage.color;
+                
+                indicator.innerHTML = `
+                    <i class="${stage.icon}"></i>
+                    <span>${stage.title}</span>
+                `;
+                
+                if (index === gameState.currentStageIndex) {
+                    indicator.classList.add('active');
+                }
+                
+                container.appendChild(indicator);
+            });
+        }
+
+        function initializePlayerStageDisplay() {
+            const container = document.getElementById('player-stage-display');
+            container.innerHTML = '';
+            
+            gameState.players.forEach((player, playerIndex) => {
+                const stage = gameState.stages.find(s => s.name === player.currentStage) || gameState.stages[0];
+                const stageAppearance = playerStageAppearances[player.currentStage];
+                
+                const stageElement = document.createElement('div');
+                stageElement.className = 'player-stage';
+                stageElement.style.borderColor = player.avatarColor;
+                stageElement.style.boxShadow = `0 0 10px ${player.avatarColor}80`;
+                
+                stageElement.innerHTML = `
+                    <div class="stage-character" id="player-${playerIndex}-stage-character"
+                         style="background: ${player.avatarColor}; box-shadow: 0 0 15px ${player.avatarColor};">
+                        <i class="${stageAppearance.icon}"></i>
+                    </div>
+                    <div class="stage-label" style="color: ${player.avatarColor}">
+                        ${player.name}
+                    </div>
+                    <div class="stage-voltage" style="color: ${stage.color}">
+                        ${stage.voltage} mV
+                    </div>
+                `;
+                
+                container.appendChild(stageElement);
+            });
+        }
+
+        function gameLoop() {
+            if (!gameState.gameActive || gameState.isPaused) {
+                requestAnimationFrame(gameLoop);
+                return;
+            }
+            
+            renderActionPotential();
+            updatePlayersOnTrack();
+            requestAnimationFrame(gameLoop);
+        }
+
+        function renderActionPotential() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw a subtle background gradient
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+            gradient.addColorStop(0, 'rgba(0, 20, 40, 0.3)');
+            gradient.addColorStop(1, 'rgba(0, 40, 80, 0.3)');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw action potential waveform
+            if (gameState.trackPoints.length > 1) {
+                // Draw the waveform with smooth curves
+                ctx.beginPath();
+                ctx.moveTo(gameState.trackPoints[0].x, gameState.trackPoints[0].y);
+                
+                // Color the waveform by stage
+                let currentStage = 'resting';
+                let segmentStart = 0;
+                
+                // Use quadratic curves for smoother lines
+                for (let i = 1; i < gameState.trackPoints.length - 1; i++) {
+                    const point = gameState.trackPoints[i];
+                    const nextPoint = gameState.trackPoints[i + 1];
+                    
+                    if (point.stage && point.stage !== currentStage) {
+                        drawWaveformSegment(segmentStart, i - 1, currentStage);
+                        currentStage = point.stage;
+                        segmentStart = i - 1;
+                        ctx.beginPath();
+                        ctx.moveTo(gameState.trackPoints[i - 1].x, gameState.trackPoints[i - 1].y);
+                    }
+                    
+                    // Draw smooth curve using quadratic Bézier
+                    const midX = (point.x + nextPoint.x) / 2;
+                    const midY = (point.y + nextPoint.y) / 2;
+                    
+                    ctx.quadraticCurveTo(point.x, point.y, midX, midY);
+                }
+                
+                // Draw the last segment
+                drawWaveformSegment(segmentStart, gameState.trackPoints.length - 1, currentStage);
+            }
+            
+            // Draw threshold line
+            drawThresholdLine();
+        }
+
+        function drawWaveformSegment(startIdx, endIdx, stageName) {
+            const stage = gameState.stages.find(s => s.name === stageName);
+            if (!stage) return;
+            
+            // Highlight current stage
+            const isCurrentStage = stageName === gameState.stages[gameState.currentStageIndex].name;
+            const lineWidth = isCurrentStage ? 5 : 3;
+            const opacity = isCurrentStage ? 1 : 0.7;
+            
+            // Create gradient for the waveform
+            const gradient = ctx.createLinearGradient(
+                gameState.trackPoints[startIdx].x, 0,
+                gameState.trackPoints[endIdx].x, 0
+            );
+            
+            // Add glow effect for current stage
+            if (isCurrentStage) {
+                ctx.shadowColor = stage.color;
+                ctx.shadowBlur = 15;
+            } else {
+                ctx.shadowBlur = 0;
+            }
+            
+            gradient.addColorStop(0, stage.color.replace(')', `, ${opacity})`).replace('rgb', 'rgba'));
+            gradient.addColorStop(1, stage.color.replace(')', `, ${opacity * 0.8})`).replace('rgb', 'rgba'));
+            
+            ctx.strokeStyle = gradient;
+            ctx.lineWidth = lineWidth;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            ctx.stroke();
+            
+            // Reset shadow
+            ctx.shadowBlur = 0;
+            
+            // Add stage labels at segment midpoints
+            const midIdx = Math.floor((startIdx + endIdx) / 2);
+            if (midIdx < gameState.trackPoints.length) {
+                const point = gameState.trackPoints[midIdx];
+                ctx.fillStyle = stage.color;
+                ctx.font = 'bold 14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(stage.title, point.x, point.y - 25);
+            }
+        }
+
+        function drawThresholdLine() {
+            // Draw threshold line at -55 mV
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            const afterHyperpolarization = -80;
+            const peakPotential = 40;
+            const voltageRange = peakPotential - afterHyperpolarization;
+            const pixelsPerMV = (height * 0.6) / voltageRange;
+            const baselineY = height * 0.7;
+            
+            const thresholdY = baselineY - ((-55 - afterHyperpolarization) * pixelsPerMV);
+            
+            ctx.beginPath();
+            ctx.moveTo(0, thresholdY);
+            ctx.lineTo(width, thresholdY);
+            ctx.strokeStyle = 'rgba(255, 170, 0, 0.3)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([5, 5]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // Add threshold label
+            ctx.fillStyle = '#ffaa00';
+            ctx.font = 'italic 12px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('Threshold (-55 mV)', 10, thresholdY - 5);
+        }
+
+        // ============================================
+        // PLAYER CHARACTER UPDATES
+        // ============================================
+        function updatePlayerCharacter() {
+            const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+            const currentStage = gameState.stages[gameState.currentStageIndex];
+            const stageAppearance = playerStageAppearances[currentStage.name];
+            
+            // Update active player avatar
+            const avatar = document.getElementById('active-player-avatar');
+            avatar.style.backgroundColor = currentPlayer.avatarColor;
+            avatar.style.borderColor = currentPlayer.avatarColor;
+            avatar.style.boxShadow = `0 0 30px ${currentPlayer.avatarColor}`;
+            avatar.innerHTML = `<i class="${stageAppearance.icon}"></i>`;
+            
+            // Update player name and stage
+            document.getElementById('active-player-name').textContent = currentPlayer.name;
+            document.getElementById('active-player-stage').innerHTML = 
+                `<i class="${stageAppearance.icon}"></i> <span>${currentStage.title} (${currentStage.voltage} mV)</span>`;
+            document.getElementById('active-player-stage').style.color = currentPlayer.avatarColor;
+            
+            // Update score (membrane potential)
+            document.getElementById('active-player-score').textContent = currentStage.voltage;
+            document.getElementById('active-player-score').style.color = currentPlayer.avatarColor;
+            
+            // Update ion channels
+            document.getElementById('na-channels').textContent = 
+                currentStage.naChannels.charAt(0).toUpperCase() + currentStage.naChannels.slice(1);
+            document.getElementById('k-channels').textContent = 
+                currentStage.kChannels.charAt(0).toUpperCase() + currentStage.kChannels.slice(1);
+            
+            // Update current stage display
+            document.getElementById('current-stage').textContent = currentStage.title;
+            document.getElementById('current-stage').style.color = stageAppearance.color;
+            
+            // Update phase indicators
+            updatePhaseIndicators();
+            
+            // Update player stage display
+            updatePlayerStageDisplays();
+            
+            // Update player indicators for multiplayer
+            if (gameState.gameMode === 'multi') {
+                updatePlayerIndicators();
+            }
+        }
+
+        function updatePhaseIndicators() {
+            gameState.stages.forEach((stage, index) => {
+                const indicator = document.getElementById(`phase-${stage.name}`);
+                if (index === gameState.currentStageIndex) {
+                    indicator.classList.add('active');
+                    indicator.style.transform = 'scale(1.1)';
+                    indicator.style.boxShadow = `0 0 20px ${stage.color}`;
+                } else {
+                    indicator.classList.remove('active');
+                    indicator.style.transform = 'scale(1)';
+                    indicator.style.boxShadow = 'none';
+                }
+            });
+        }
+
+        function updatePlayerStageDisplays() {
+            gameState.players.forEach((player, playerIndex) => {
+                const stage = gameState.stages.find(s => s.name === player.currentStage) || gameState.stages[0];
+                const stageAppearance = playerStageAppearances[player.currentStage];
+                
+                const characterElement = document.getElementById(`player-${playerIndex}-stage-character`);
+                if (characterElement) {
+                    characterElement.style.background = player.avatarColor;
+                    characterElement.style.boxShadow = `0 0 15px ${player.avatarColor}`;
+                    characterElement.innerHTML = `<i class="${stageAppearance.icon}"></i>`;
+                    
+                    // Update label colors
+                    const stageElement = characterElement.closest('.player-stage');
+                    if (stageElement) {
+                        stageElement.style.borderColor = player.avatarColor;
+                        stageElement.querySelector('.stage-label').style.color = player.avatarColor;
+                        stageElement.querySelector('.stage-voltage').style.color = stage.color;
+                        stageElement.querySelector('.stage-voltage').textContent = `${stage.voltage} mV`;
+                    }
+                }
+            });
+        }
+
+        function updatePlayersOnTrack() {
+            const playersContainer = document.getElementById('players-on-track');
+            playersContainer.innerHTML = '';
+            
+            // Adjust size based on number of players
+            const playerSize = gameState.players.length > 4 ? 60 : 70;
+            
+            gameState.players.forEach((player, playerIndex) => {
+                // Calculate position based on stage progress
+                const stagePoints = gameState.trackPoints.filter(p => p.stage === player.currentStage);
+                if (stagePoints.length === 0) return;
+                
+                const pointIndex = Math.floor(player.stageProgress * (stagePoints.length - 1));
+                const point = stagePoints[Math.min(pointIndex, stagePoints.length - 1)];
+                
+                if (!point) return;
+                
+                // Create character based on current stage
+                const characterElement = createStageCharacter(player, point, playerIndex, playerSize);
+                playersContainer.appendChild(characterElement);
+            });
+        }
+
+        function createStageCharacter(player, point, playerIndex, size = 70) {
+            const stageAppearance = playerStageAppearances[player.currentStage];
+            const currentStage = gameState.stages.find(s => s.name === player.currentStage);
+            
+            const element = document.createElement('div');
+            element.style.position = 'absolute';
+            element.style.left = `${point.x - size/2}px`;
+            element.style.top = `${point.y - size/2}px`;
+            element.style.width = `${size}px`;
+            element.style.height = `${size}px`;
+            
+            // Different character appearance for each stage
+            let characterHTML = '';
+            
+            switch(player.currentStage) {
+                case 'resting':
+                    characterHTML = createRestingNeuron(player, stageAppearance, size);
+                    break;
+                case 'depolarizing':
+                    characterHTML = createDepolarizingNeuron(player, stageAppearance, size);
+                    break;
+                case 'peak':
+                    characterHTML = createPeakNeuron(player, stageAppearance, size);
+                    break;
+                case 'repolarizing':
+                    characterHTML = createRepolarizingNeuron(player, stageAppearance, size);
+                    break;
+                case 'hyperpolarizing':
+                    characterHTML = createHyperpolarizingNeuron(player, stageAppearance, size);
+                    break;
+            }
+            
+            element.innerHTML = characterHTML;
+            element.title = `${player.name} - ${currentStage.title} (${currentStage.voltage} mV)`;
+            
+            // Highlight current player in multiplayer with their color
+            if (gameState.gameMode === 'multi' && playerIndex === gameState.currentPlayerIndex) {
+                element.style.filter = `drop-shadow(0 0 10px ${player.avatarColor}) brightness(1.2)`;
+                element.style.zIndex = '10';
+            } else {
+                element.style.zIndex = '1';
+            }
+            
+            return element;
+        }
+
+        function createRestingNeuron(player, appearance, size) {
+            const innerSize = size * 0.7;
+            const dotSize = size * 0.2;
+            
+            return `
+                <div style="
+                    width: 100%;
+                    height: 100%;
+                    position: relative;
+                    animation: gentle-pulse 2s infinite;
+                ">
+                    <!-- Resting neuron with closed channels -->
+                    <div style="
+                        position: absolute;
+                        width: ${innerSize}px;
+                        height: ${innerSize}px;
+                        top: ${(size - innerSize)/2}px;
+                        left: ${(size - innerSize)/2}px;
+                        border-radius: 50%;
+                        background: ${player.avatarColor};
+                        border: 2px solid white;
+                        box-shadow: 0 0 15px ${player.avatarColor};
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: ${size * 0.3}px;
+                        color: white;
+                    ">
+                        <i class="${appearance.icon}"></i>
+                    </div>
+                    <!-- Closed channel indicators -->
+                    <div style="
+                        position: absolute;
+                        width: ${dotSize}px;
+                        height: ${dotSize}px;
+                        top: ${dotSize/2}px;
+                        left: ${dotSize/2}px;
+                        background: ${player.avatarColor};
+                        border-radius: 50%;
+                        border: 1px solid #333;
+                    "></div>
+                    <div style="
+                        position: absolute;
+                        width: ${dotSize}px;
+                        height: ${dotSize}px;
+                        bottom: ${dotSize/2}px;
+                        right: ${dotSize/2}px;
+                        background: ${player.avatarColor};
+                        border-radius: 50%;
+                        border: 1px solid #333;
+                    "></div>
+                </div>
+            `;
+        }
+
+        function createDepolarizingNeuron(player, appearance, size) {
+            const innerSize = size * 0.85;
+            const dotSize = size * 0.25;
+            
+            return `
+                <div style="
+                    width: 100%;
+                    height: 100%;
+                    position: relative;
+                    animation: vibrate 0.5s infinite;
+                ">
+                    <!-- Activating neuron -->
+                    <div style="
+                        position: absolute;
+                        width: ${innerSize}px;
+                        height: ${innerSize}px;
+                        top: ${(size - innerSize)/2}px;
+                        left: ${(size - innerSize)/2}px;
+                        border-radius: 50%;
+                        background: ${player.avatarColor};
+                        border: 2px solid white;
+                        box-shadow: 0 0 20px ${player.avatarColor};
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: ${size * 0.35}px;
+                        color: white;
+                    ">
+                        <i class="${appearance.icon}"></i>
+                    </div>
+                    <!-- Opening Na+ channels -->
+                    <div style="
+                        position: absolute;
+                        width: ${dotSize}px;
+                        height: ${dotSize}px;
+                        top: 0;
+                        left: 0;
+                        background: ${player.avatarColor};
+                        border-radius: 50%;
+                        border: 1px solid white;
+                        animation: pulse 0.5s infinite;
+                    "></div>
+                    <!-- Electric arcs -->
+                    <div style="
+                        position: absolute;
+                        width: ${size * 0.15}px;
+                        height: ${size * 0.4}px;
+                        top: ${size * 0.15}px;
+                        right: ${size * 0.15}px;
+                        background: ${player.avatarColor};
+                        border-radius: 3px;
+                        transform: rotate(45deg);
+                        opacity: 0.7;
+                    "></div>
+                </div>
+            `;
+        }
+
+        function createPeakNeuron(player, appearance, size) {
+            return `
+                <div style="
+                    width: 100%;
+                    height: 100%;
+                    position: relative;
+                    animation: pulse-fire 0.3s infinite;
+                ">
+                    <!-- Firing neuron at peak -->
+                    <div style="
+                        position: absolute;
+                        width: ${size}px;
+                        height: ${size}px;
+                        top: 0;
+                        left: 0;
+                        border-radius: 50%;
+                        background: ${player.avatarColor};
+                        border: 3px solid white;
+                        box-shadow: 0 0 30px ${player.avatarColor};
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: ${size * 0.4}px;
+                        color: white;
+                    ">
+                        <i class="${appearance.icon}"></i>
+                    </div>
+                    <!-- Fire effect -->
+                    <div style="
+                        position: absolute;
+                        width: 100%;
+                        height: 100%;
+                        background: radial-gradient(circle, ${player.avatarColor}00 0%, ${player.avatarColor}40 70%);
+                        border-radius: 50%;
+                    "></div>
+                    <!-- Sparks -->
+                    <div style="
+                        position: absolute;
+                        width: ${size * 0.06}px;
+                        height: ${size * 0.2}px;
+                        top: -${size * 0.05}px;
+                        left: 50%;
+                        background: white;
+                        border-radius: 1px;
+                        transform: translateX(-50%);
+                        animation: spark 0.5s infinite;
+                    "></div>
+                </div>
+            `;
+        }
+
+        function createRepolarizingNeuron(player, appearance, size) {
+            const innerSize = size * 0.7;
+            const dotSize = size * 0.2;
+            
+            return `
+                <div style="
+                    width: 100%;
+                    height: 100%;
+                    position: relative;
+                    animation: cooling 1s infinite;
+                ">
+                    <!-- Repolarizing neuron -->
+                    <div style="
+                        position: absolute;
+                        width: ${innerSize}px;
+                        height: ${innerSize}px;
+                        top: ${(size - innerSize)/2}px;
+                        left: ${(size - innerSize)/2}px;
+                        border-radius: 50%;
+                        background: ${player.avatarColor};
+                        border: 2px solid white;
+                        box-shadow: 0 0 15px ${player.avatarColor};
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: ${size * 0.3}px;
+                        color: white;
+                    ">
+                        <i class="${appearance.icon}"></i>
+                    </div>
+                    <!-- Cooling effect -->
+                    <div style="
+                        position: absolute;
+                        width: 100%;
+                        height: 100%;
+                        border: 2px dashed ${player.avatarColor};
+                        border-radius: 50%;
+                        opacity: 0.5;
+                        animation: rotate 5s linear infinite;
+                    "></div>
+                    <!-- K+ channels open -->
+                    <div style="
+                        position: absolute;
+                        width: ${dotSize}px;
+                        height: ${dotSize}px;
+                        bottom: ${dotSize/2}px;
+                        right: ${dotSize/2}px;
+                        background: ${player.avatarColor};
+                        border-radius: 50%;
+                        border: 1px solid white;
+                        animation: pulse 1s infinite;
+                    "></div>
+                </div>
+            `;
+        }
+
+        function createHyperpolarizingNeuron(player, appearance, size) {
+            const innerSize = size * 0.6;
+            
+            return `
+                <div style="
+                    width: 100%;
+                    height: 100%;
+                    position: relative;
+                    animation: gentle-pulse 3s infinite;
+                ">
+                    <!-- Recovering neuron -->
+                    <div style="
+                        position: absolute;
+                        width: ${innerSize}px;
+                        height: ${innerSize}px;
+                        top: ${(size - innerSize)/2}px;
+                        left: ${(size - innerSize)/2}px;
+                        border-radius: 50%;
+                        background: ${player.avatarColor};
+                        border: 2px solid white;
+                        box-shadow: 0 0 10px ${player.avatarColor};
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: ${size * 0.25}px;
+                        color: white;
+                    ">
+                        <i class="${appearance.icon}"></i>
+                    </div>
+                    <!-- Recovery glow -->
+                    <div style="
+                        position: absolute;
+                        width: 100%;
+                        height: 100%;
+                        background: radial-gradient(circle, ${player.avatarColor}20 0%, transparent 70%);
+                        border-radius: 50%;
+                    "></div>
+                    <!-- Refractory period indicator -->
+                    <div style="
+                        position: absolute;
+                        width: ${size * 0.9}px;
+                        height: ${size * 0.9}px;
+                        top: ${size * 0.05}px;
+                        left: ${size * 0.05}px;
+                        border: 1px dashed ${player.avatarColor};
+                        border-radius: 50%;
+                        opacity: 0.3;
+                    "></div>
+                </div>
+            `;
+        }
+
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes gentle-pulse {
+                0%, 100% { transform: scale(1); opacity: 1; }
+                50% { transform: scale(1.05); opacity: 0.8; }
+            }
+            @keyframes vibrate {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-2px); }
+                75% { transform: translateX(2px); }
+            }
+            @keyframes pulse-fire {
+                0%, 100% { transform: scale(1); filter: brightness(1); }
+                50% { transform: scale(1.1); filter: brightness(1.5); }
+            }
+            @keyframes cooling {
+                0%, 100% { transform: scale(1); filter: hue-rotate(0deg); }
+                50% { transform: scale(0.95); filter: hue-rotate(30deg); }
+            }
+            @keyframes spark {
+                0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0; }
+                50% { transform: translateX(-50%) translateY(-10px); opacity: 1; }
+            }
+            @keyframes rotate {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // ============================================
+        // QUESTION MANAGEMENT WITH NO REPETITION
+        // ============================================
+        function getQuestionIndex(question) {
+            return questions.findIndex(q => 
+                q.question === question.question && 
+                q.stage === question.stage
+            );
+        }
+
+        function loadStageQuestion() {
+            const currentStage = gameState.stages[gameState.currentStageIndex];
+            
+            // Get all questions for current stage
+            const allStageQuestions = questions.filter(q => q.stage === currentStage.name);
+            
+            // Filter out already used questions
+            const availableQuestions = allStageQuestions.filter((q, index) => 
+                !gameState.usedQuestions.includes(getQuestionIndex(q))
+            );
+            
+            // If no more questions available, reset used questions for this stage
+            if (availableQuestions.length === 0) {
+                // Reset used questions for this stage
+                gameState.usedQuestions = gameState.usedQuestions.filter(usedIndex => {
+                    const usedQuestion = questions[usedIndex];
+                    return usedQuestion.stage !== currentStage.name;
+                });
+                
+                // Try again with refreshed pool
+                return loadStageQuestion();
+            }
+            
+            // Pick a random question from available ones
+            const randomIndex = Math.floor(Math.random() * availableQuestions.length);
+            gameState.currentQuestion = availableQuestions[randomIndex];
+            
+            // Mark this question as used
+            const questionIndex = getQuestionIndex(gameState.currentQuestion);
+            gameState.usedQuestions.push(questionIndex);
+            gameState.questionHistory.push(gameState.currentQuestion.question);
+            
+            // Randomize answers
+            gameState.shuffledAnswers = [...gameState.currentQuestion.answers];
+            gameState.correctAnswerIndex = gameState.currentQuestion.correct;
+            
+            // Shuffle answers
+            for (let i = gameState.shuffledAnswers.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [gameState.shuffledAnswers[i], gameState.shuffledAnswers[j]] = 
+                [gameState.shuffledAnswers[j], gameState.shuffledAnswers[i]];
+                
+                // Update correct answer index
+                if (j === gameState.correctAnswerIndex) {
+                    gameState.correctAnswerIndex = i;
+                } else if (i === gameState.correctAnswerIndex) {
+                    gameState.correctAnswerIndex = j;
+                }
+            }
+            
+            displayQuestion();
+            gameState.canAnswer = true;
+        }
+
+        function displayQuestion() {
+            if (!gameState.currentQuestion) return;
+            
+            const questionText = document.getElementById('question-text');
+            const questionTopic = document.getElementById('question-topic');
+            const difficultyBadge = document.getElementById('difficulty-badge');
+            const currentStage = gameState.stages[gameState.currentStageIndex];
+            
+            questionText.textContent = gameState.currentQuestion.question;
+            questionTopic.textContent = currentStage.title;
+            difficultyBadge.innerHTML = `<i class="fas fa-chart-line"></i> Stage ${gameState.currentStageIndex + 1}/5`;
+            
+            // Update answer buttons
+            const answerButtons = document.querySelectorAll('.answer-btn');
+            answerButtons.forEach((btn, index) => {
+                if (index < gameState.shuffledAnswers.length) {
+                    btn.textContent = `${String.fromCharCode(65 + index)}. ${gameState.shuffledAnswers[index]}`;
+                    btn.className = 'answer-btn';
+                    btn.disabled = false;
+                    btn.onclick = () => checkAnswer(index);
+                }
+            });
+        }
+
+        // ============================================
+        // GAME LOGIC WITH BUG FIXES
+        // ============================================
+        function checkAnswer(selectedIndex) {
+            if (!gameState.currentQuestion || !gameState.canAnswer) return;
+            
+            gameState.canAnswer = false;
+            const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+            const currentStage = gameState.stages[gameState.currentStageIndex];
+            
+            const answerButtons = document.querySelectorAll('.answer-btn');
+            const isCorrect = selectedIndex === gameState.correctAnswerIndex;
+            
+            // Disable buttons
+            answerButtons.forEach(btn => btn.disabled = true);
+            
+            // Mark correct/wrong
+            answerButtons.forEach((btn, index) => {
+                if (index === gameState.correctAnswerIndex) {
+                    btn.classList.add('correct');
+                } else if (index === selectedIndex && !isCorrect) {
+                    btn.classList.add('wrong');
+                }
+            });
+            
+            // Update stats
+            gameState.totalQuestions++;
+            currentPlayer.questionsAnswered++;
+            
+            if (isCorrect) {
+                gameState.totalCorrect++;
+                currentPlayer.correctAnswers++;
+                currentPlayer.currentStreak++;
+                currentPlayer.maxStreak = Math.max(currentPlayer.maxStreak, currentPlayer.currentStreak);
+                
+                // Score based on stage
+                const baseScore = 100;
+                const streakBonus = Math.min(5, currentPlayer.currentStreak) * 20;
+                const stageMultiplier = gameState.currentStageIndex + 1;
+                
+                currentPlayer.score = currentStage.voltage;
+                currentPlayer.myelin += 10 * stageMultiplier;
+                
+                // Update stage progress
+                gameState.stageProgress++;
+                currentPlayer.stageProgress = gameState.stageProgress / currentStage.questionsNeeded;
+                
+                // Check if stage complete
+                if (gameState.stageProgress >= currentStage.questionsNeeded) {
+                    advanceToNextStage();
+                    return;
+                }
+                
+                // Check for streak bonus
+                if (currentPlayer.currentStreak >= 5) {
+                    showAchievement("⚡ Conduction Boost!", `${currentPlayer.name} got 5 in a row!`);
+                    currentPlayer.speed = 2.0;
+                }
+                
+                // Update UI
+                updateGameUI();
+                updatePlayerCharacter();
+                
+            } else {
+                currentPlayer.currentStreak = 0;
+                currentPlayer.health -= 20;
+                currentPlayer.stageProgress = Math.max(0, currentPlayer.stageProgress - 0.1);
+                
+                if (currentPlayer.health <= 0) {
+                    playerEliminated(currentPlayer);
+                    return;
+                }
+                
+                showAchievement("Channel Block!", "Incorrect answer affects ion channels!");
+            }
+            
+            // Update player stats
+            updatePlayerStats();
+            updatePlayersOnTrack();
+            
+            // Clear timeout to prevent multiple calls
+            clearTimeout(window.answerTimeout);
+            
+            // Next question/player with proper delay
+            window.answerTimeout = setTimeout(() => {
+                if (gameState.gameMode === 'multi') {
+                    nextPlayer();
+                }
+                loadStageQuestion();
+            }, 2000);
+        }
+
+        function advanceToNextStage() {
+            const currentStage = gameState.stages[gameState.currentStageIndex];
+            
+            if (gameState.currentStageIndex >= gameState.stages.length - 1) {
+                completeActionPotential();
+                return;
+            }
+            
+            // Show stage transition animation
+            showStageTransition(currentStage);
+            
+            // Advance to next stage
+            gameState.currentStageIndex++;
+            gameState.stageProgress = 0;
+            
+            // Update all players to new stage
+            gameState.players.forEach(player => {
+                player.currentStage = gameState.stages[gameState.currentStageIndex].name;
+                player.stageProgress = 0;
+            });
+            
+            // Clear existing timeout to prevent animation conflicts
+            clearTimeout(window.stageTransitionTimeout);
+            
+            // Update UI after delay
+            window.stageTransitionTimeout = setTimeout(() => {
+                closeStageAnimation();
+                updateGameUI();
+                updatePlayerCharacter();
+                updatePlayersOnTrack();
+                loadStageQuestion();
+                
+                const nextStage = gameState.stages[gameState.currentStageIndex];
+                showAchievement(`Entering ${nextStage.title}!`, nextStage.description);
+            }, 2000);
+        }
+
+        function showStageTransition(currentStage) {
+            const animation = document.getElementById('stage-progress-animation');
+            const icon = document.getElementById('stage-transition-icon');
+            const title = document.getElementById('stage-transition-title');
+            const desc = document.getElementById('stage-transition-desc');
+            
+            const nextStage = gameState.stages[gameState.currentStageIndex + 1];
+            
+            icon.innerHTML = `<i class="${currentStage.icon}"></i> → <i class="${nextStage.icon}"></i>`;
+            icon.style.color = currentStage.color;
+            title.textContent = `${currentStage.title} Complete!`;
+            title.style.color = currentStage.color;
+            desc.textContent = `Advancing to ${nextStage.title}...`;
+            desc.style.color = nextStage.color;
+            animation.style.borderColor = currentStage.color;
+            animation.style.boxShadow = `0 0 50px ${currentStage.color}`;
+            
+            animation.style.display = 'block';
+        }
+
+        function closeStageAnimation() {
+            document.getElementById('stage-progress-animation').style.display = 'none';
+        }
+
+        function completeActionPotential() {
+            showAchievement("Action Potential Complete!", "You've successfully fired an action potential!");
+            
+            // Bonus rewards
+            gameState.players.forEach(player => {
+                if (player.health > 0) {
+                    player.score = -70; // Reset to resting
+                    player.myelin += 100;
+                    player.health = Math.min(100, player.health + 50);
+                    player.speed = 1.0;
+                }
+            });
+            
+            // Clear existing timeout
+            clearTimeout(window.gameCompleteTimeout);
+            
+            window.gameCompleteTimeout = setTimeout(() => {
+                if (gameState.gameMode === 'single') {
+                    alert(`Action Potential Fired!\n\nFinal Score: ${gameState.players[0].myelin} myelin\n\nWould you like to try again?`);
+                } else {
+                    let winner = gameState.players[0];
+                    let winners = [gameState.players[0]];
+                    
+                    gameState.players.forEach(player => {
+                        if (player.myelin > winner.myelin) {
+                            winner = player;
+                            winners = [player];
+                        } else if (player.myelin === winner.myelin && player !== winner) {
+                            winners.push(player);
+                        }
+                    });
+                    
+                    let winnerText = '';
+                    if (winners.length === 1) {
+                        winnerText = `🏆 Winner: ${winner.name} with ${winner.myelin} myelin!`;
+                    } else {
+                        winnerText = `🏆 It's a tie! Winners: ${winners.map(w => w.name).join(', ')} with ${winner.myelin} myelin each!`;
+                    }
+                    
+                    alert(`Action Potential Complete!\n\n${winnerText}\n\nWould you like to play again?`);
+                }
+                
+                if (confirm("Play again?")) {
+                    restartGame();
+                } else {
+                    returnToMenu();
+                }
+            }, 1000);
+        }
+
+        function nextPlayer() {
+            // Find next active player (with health > 0)
+            let nextPlayerIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
+            let attempts = 0;
+            
+            while (gameState.players[nextPlayerIndex].health <= 0 && attempts < gameState.players.length) {
+                nextPlayerIndex = (nextPlayerIndex + 1) % gameState.players.length;
+                attempts++;
+            }
+            
+            gameState.currentPlayerIndex = nextPlayerIndex;
+            showTurnIndicator();
+            updatePlayerCharacter();
+        }
+
+        function showTurnIndicator() {
+            const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+            const indicator = document.getElementById('turn-indicator');
+            const colorElement = document.getElementById('turn-player-color');
+            const textElement = document.getElementById('turn-text');
+            
+            colorElement.style.backgroundColor = currentPlayer.avatarColor;
+            textElement.textContent = `${currentPlayer.name}'s Turn!`;
+            
+            indicator.style.display = 'flex';
+            
+            // Clear existing timeout
+            clearTimeout(window.turnIndicatorTimeout);
+            
+            window.turnIndicatorTimeout = setTimeout(() => {
+                indicator.style.display = 'none';
+            }, 3000);
+        }
+
+        function updatePlayerStats() {
+            const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+            
+            document.getElementById('conduction-speed').textContent = `${currentPlayer.speed.toFixed(1)}x`;
+            document.getElementById('current-streak').textContent = currentPlayer.currentStreak;
+            document.getElementById('current-streak').style.color = currentPlayer.currentStreak >= 3 ? '#ffaa00' : '#ffffff';
+        }
+
+        function updateGameUI() {
+            const currentStage = gameState.stages[gameState.currentStageIndex];
+            const progressPercent = (gameState.stageProgress / currentStage.questionsNeeded) * 100;
+            
+            document.getElementById('progress-fill').style.width = `${progressPercent}%`;
+            document.getElementById('progress-percent').textContent = `${Math.round(progressPercent)}%`;
+            
+            document.getElementById('questions-count').textContent = gameState.totalQuestions;
+            document.getElementById('correct-count').textContent = gameState.totalCorrect;
+        }
+
+        function playerEliminated(player) {
+            player.health = 0;
+            showAchievement("Neuron Degeneration!", `${player.name}'s neuron health reached 0%!`);
+            
+            const activePlayers = gameState.players.filter(p => p.health > 0);
+            if (activePlayers.length < 2 && gameState.gameMode === 'multi') {
+                // Clear existing timeout
+                clearTimeout(window.eliminationTimeout);
+                
+                window.eliminationTimeout = setTimeout(() => {
+                    completeActionPotential();
+                }, 2000);
+            }
+        }
+
+        // ============================================
+        // POWER-UPS
+        // ============================================
+        function usePowerUp(type) {
+            const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+            
+            switch(type) {
+                case 'myelin':
+                    if (currentPlayer.myelin >= 100) {
+                        currentPlayer.myelin -= 100;
+                        currentPlayer.speed += 0.5;
+                        showAchievement("Myelin Added!", "Conduction velocity increased!");
+                        updatePlayerStats();
+                    } else {
+                        alert(`Need 100 myelin! You have ${currentPlayer.myelin}`);
+                    }
+                    break;
+                    
+                case 'boost':
+                    if (currentPlayer.myelin >= 75) {
+                        currentPlayer.myelin -= 75;
+                        // Boost stage progress
+                        gameState.stageProgress = Math.min(
+                            gameState.stages[gameState.currentStageIndex].questionsNeeded,
+                            gameState.stageProgress + 1
+                        );
+                        currentPlayer.stageProgress = gameState.stageProgress / 
+                            gameState.stages[gameState.currentStageIndex].questionsNeeded;
+                        
+                        showAchievement("Channel Boost!", "Advanced through stage faster!");
+                        updateGameUI();
+                        updatePlayersOnTrack();
+                    } else {
+                        alert(`Need 75 myelin! You have ${currentPlayer.myelin}`);
+                    }
+                    break;
+            }
+        }
+
+        function skipQuestion() {
+            const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+            
+            if (gameState.canAnswer) {
+                currentPlayer.health -= 15;
+                currentPlayer.currentStreak = 0;
+                currentPlayer.stageProgress = Math.max(0, currentPlayer.stageProgress - 0.2);
+                
+                updatePlayerStats();
+                updatePlayersOnTrack();
+                
+                if (currentPlayer.health <= 0) {
+                    playerEliminated(currentPlayer);
+                    return;
+                }
+                
+                if (gameState.gameMode === 'multi') {
+                    nextPlayer();
+                }
+                loadStageQuestion();
+            }
+        }
+
+        function showHint() {
+            const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+            const currentStage = gameState.stages[gameState.currentStageIndex];
+            
+            if (currentPlayer.myelin >= 30) {
+                currentPlayer.myelin -= 30;
+                
+                const hints = [
+                    `Current stage: ${currentStage.title}`,
+                    `Voltage: ${currentStage.voltage} mV`,
+                    `Na+ channels: ${currentStage.naChannels}`,
+                    `K+ channels: ${currentStage.kChannels}`,
+                    currentStage.description
+                ];
+                
+                const randomHint = hints[Math.floor(Math.random() * hints.length)];
+                alert(`💡 Hint: ${randomHint}\n\nCost: 30 myelin`);
+                updatePlayerStats();
+            } else {
+                alert(`Need 30 myelin for a hint! You have ${currentPlayer.myelin}`);
+            }
+        }
+
+        // ============================================
+        // GAME CONTROLS
+        // ============================================
+        function togglePause() {
+            gameState.isPaused = !gameState.isPaused;
+            const pauseBtn = document.querySelector('.action-btn:nth-child(5)');
+            if (gameState.isPaused) {
+                pauseBtn.innerHTML = '<i class="fas fa-play"></i> Resume';
+                pauseBtn.style.background = 'linear-gradient(135deg, #00aa00, #008800)';
+            } else {
+                pauseBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+                pauseBtn.style.background = 'linear-gradient(135deg, #0066aa, #004488)';
+            }
+        }
+
+        function resetGameState() {
+            gameState.gameActive = false;
+            gameState.isPaused = false;
+            gameState.currentPlayerIndex = 0;
+            gameState.currentStageIndex = 0;
+            gameState.stageProgress = 0;
+            gameState.totalQuestions = 0;
+            gameState.totalCorrect = 0;
+            gameState.usedQuestions = [];
+            gameState.questionHistory = [];
+            
+            // Clear all timeouts to prevent memory leaks
+            clearTimeout(window.answerTimeout);
+            clearTimeout(window.stageTransitionTimeout);
+            clearTimeout(window.gameCompleteTimeout);
+            clearTimeout(window.turnIndicatorTimeout);
+            clearTimeout(window.eliminationTimeout);
+            clearTimeout(window.achievementTimeout);
+            clearTimeout(window.gameRestartTimeout);
+            
+            gameState.players.forEach(player => {
+                player.score = -70;
+                player.position = 0;
+                player.health = 100;
+                player.myelin = 0;
+                player.speed = 1.0;
+                player.currentStreak = 0;
+                player.maxStreak = 0;
+                player.questionsAnswered = 0;
+                player.correctAnswers = 0;
+                player.currentStage = 'resting';
+                player.stageProgress = 0;
+            });
+        }
+
+        function restartGame() {
+            gameState.gameActive = false;
+            
+            // Clear all timeouts
+            clearTimeout(window.gameRestartTimeout);
+            clearTimeout(window.answerTimeout);
+            clearTimeout(window.stageTransitionTimeout);
+            clearTimeout(window.gameCompleteTimeout);
+            clearTimeout(window.turnIndicatorTimeout);
+            clearTimeout(window.eliminationTimeout);
+            clearTimeout(window.achievementTimeout);
+            
+            window.gameRestartTimeout = setTimeout(() => {
+                if (gameState.gameMode === 'single') {
+                    startSinglePlayer();
+                } else {
+                    startMultiplayer();
+                }
+            }, 100);
+        }
+
+        function returnToMenu() {
+            document.getElementById('game-board').style.display = 'none';
+            gameState.gameActive = false;
+            
+            // Clear all timeouts
+            clearTimeout(window.answerTimeout);
+            clearTimeout(window.stageTransitionTimeout);
+            clearTimeout(window.gameCompleteTimeout);
+            clearTimeout(window.turnIndicatorTimeout);
+            clearTimeout(window.eliminationTimeout);
+            clearTimeout(window.achievementTimeout);
+            clearTimeout(window.gameRestartTimeout);
+        }
+
+        // ============================================
+        // ACHIEVEMENTS
+        // ============================================
+        function showAchievement(title, description) {
+            document.getElementById('achievement-title').textContent = title;
+            document.getElementById('achievement-desc').textContent = description;
+            document.getElementById('achievement-popup').style.display = 'block';
+            
+            // Clear existing timeout
+            clearTimeout(window.achievementTimeout);
+            
+            window.achievementTimeout = setTimeout(() => {
+                closeAchievement();
+            }, 3000);
+        }
+
+        function closeAchievement() {
+            document.getElementById('achievement-popup').style.display = 'none';
+        }
+
+        // ============================================
+        // STARTUP
+        // ============================================
+        window.onload = function() {
+            console.log("NeuroCoaster loaded with REALISTIC action potential!");
+            
+            // Initialize timeout variables
+            window.answerTimeout = null;
+            window.stageTransitionTimeout = null;
+            window.gameCompleteTimeout = null;
+            window.turnIndicatorTimeout = null;
+            window.eliminationTimeout = null;
+            window.achievementTimeout = null;
+            window.gameRestartTimeout = null;
+            
+            setTimeout(() => {
+                if (canvas) {
+                    const container = canvas.parentElement;
+                    canvas.width = container.clientWidth;
+                    canvas.height = container.clientHeight;
+                }
+            }, 100);
+        };
+
+        window.addEventListener('resize', function() {
+            if (canvas) {
+                const container = canvas.parentElement;
+                canvas.width = container.clientWidth;
+                canvas.height = container.height;
+                generateRealisticActionPotentialTrack();
+                if (gameState.gameActive) {
+                    renderActionPotential();
+                    updatePlayersOnTrack();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
