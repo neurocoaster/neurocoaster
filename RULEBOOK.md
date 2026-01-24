@@ -14,9 +14,6 @@
 ### Single Player Mode
 Play solo to learn and practice neuroscience concepts at your own pace.
 
-### Multiplayer Mode
-Compete against 2-6 players in turn-based gameplay. Each player has their own neuron that moves along the action potential track.
-
 ---
 
 ## How to Play
@@ -86,13 +83,8 @@ The **threshold** represents the "all-or-nothing" principle of action potentials
 
 **Access Settings**: 
 - Single Player: Click "Settings" button
-- Multiplayer: Configure during game setup
 
 ---
-
-## Power-Ups (Multiplayer Only)
-
-When a player completes the action potential, they earn a power-up that affects their opponents:
 
 ### Excitatory Power-Up
 - **Effect**: Speeds up opponents
@@ -128,54 +120,11 @@ When a player completes the action potential, they earn a power-up that affects 
 
 ---
 
-## Multiplayer Mode
-
-### Setup
-
-1. Click "Multiplayer" button
-2. Enter number of players (2-6)
-3. Enter each player's name (optional, defaults to "Player 1", "Player 2", etc.)
-4. Configure game settings (total questions, threshold)
-5. Click "Start Game"
-
-### Turn-Based Play
-
-- Questions alternate between players
-- Each player has a colored neuron on the track
-- Current player is highlighted in the status table
-- Same question won't appear twice in a row (prevents answer copying)
-
-### Player Status Table
-
-Shows for each player:
-- **Player Name**: Color-coded to match their neuron
-- **Threshold Status**: 
-  - Green badge = Reached threshold
-  - Gray badge = Not reached
-  - Shows effective threshold if modified by power-ups
-- **Stage**: Questions answered / Total questions
-- **Score**: Current points
-
-### Visual Indicators
-
-- **Neuron Colors**: Each player has a unique color
-- **Threshold Glow**: Neurons that have reached threshold glow brightly
-- **Current Player**: Highlighted row in status table
-
----
-
 ## Winning
 
 ### Single Player
 - Complete all required questions
-- Choose a power-up (for future multiplayer games)
 - View your completion time and best time
-
-### Multiplayer
-- First player to complete all questions wins
-- Game ends immediately when a player reaches the target (no waiting for other turns)
-- Winner earns a power-up that affects remaining players
-- Other players can continue playing or restart
 
 ---
 
@@ -189,9 +138,6 @@ Shows for each player:
 ### For Competition
 - Switch to **Challenge Mode** for a real test
 - Build streaks to activate Myelin Power for faster progress
-- In multiplayer, use power-ups strategically:
-  - **Excitatory**: Help opponents catch up (friendly play)
-  - **Inhibitory**: Slow down opponents (competitive play)
 
 ### Threshold Strategy
 - Reaching threshold is a major milestone
@@ -231,7 +177,7 @@ The game includes questions on:
 ## Getting Started
 
 1. Open the game in your web browser
-2. Choose Single Player or click "Multiplayer" to set up a game
+2. Choose Single Player. Multiplayer currently unavailable.
 3. Configure your preferred settings
 4. Start answering questions and ride the action potential!
 
