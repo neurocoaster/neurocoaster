@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [react()],
   base: '/neurocoaster/',
   build: {
-    outDir: 'docs'
-  }
+    outDir: 'dist',
+    emptyOutDir: true,
+  },
 })
