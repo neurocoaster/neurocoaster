@@ -18,6 +18,15 @@ npm run build
 npm run preview
 ```
 
+## Deploy
+
+```bash
+npm run build
+copy dist → docs (/docs folder should be a copy of /dist folder after build is run, plus 404.html file)
+git commit
+git push
+```
+
 ## Notes
 - Uses Font Awesome via CDN (see `index.html`).
 - Single Player is wired; Multiplayer can reuse the same `Board` with turn logic.
