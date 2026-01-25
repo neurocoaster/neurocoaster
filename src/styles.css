@@ -101,6 +101,66 @@ h1 { color: #00ffff; font-size: 3.5em; text-shadow: 0 0 25px #00aaff; margin-bot
 .achievement-desc { color: #fff8e1; font-size: 1.1em; margin-bottom: 20px; line-height: 1.4; }
 .continue-btn { padding: 12px 25px; background: linear-gradient(135deg, #0066aa, #004488); border: 3px solid #00aaff; border-radius: 10px; color: white; cursor: pointer; font-size: 1em; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; margin: 0 auto; }
 
+/* Phase Indicators */
+.phase-indicators {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  /* Optional: prevent labels from blocking clicks on the canvas beneath.
+     If you have clickable items inside, keep this as 'auto' and set pointer-events on children instead. */
+  /* pointer-events: none; */
+}
+
+.phase-indicator {
+  background: rgba(0, 20, 40, 0.9);
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: 2px solid;
+  display: inline-flex;           /* inline-flex to keep it sized to content but still flex children */
+  align-items: center;
+  gap: 10px;
+
+  /* 🔒 Constrain width so text can wrap/clip inside */
+  min-width: 120px;
+  max-width: clamp(140px, 22vw, 260px);  /* responsive bounds so titles don't sprawl */
+
+  box-sizing: border-box;
+  backdrop-filter: blur(5px);
+  font-size: 0.9em;
+  font-weight: bold;
+  transition: all 0.3s;
+  /* pointer-events: auto; */     /* enable if you want these boxes to be clickable */
+}
+
+.phase-indicator.active {
+  transform: scale(1.1);
+  box-shadow: 0 0 20px;
+}
+
+/* Icon: fixed size and non-growing */
+.phase-icon {
+  flex: 0 0 auto;
+  font-size: 1.1em;
+  line-height: 1;
+}
+
+.phase-title {
+  display: inline-block;
+  min-width: 0;                  /* CRITICAL: allow shrinking inside flex */
+  max-width: 100%;
+  box-sizing: border-box;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  color: #fff;
+}
+
 @media (max-width: 1200px) {
   .board-game-layout { grid-template-columns: 1fr; }
   #action-potential-track { height: 400px; }
