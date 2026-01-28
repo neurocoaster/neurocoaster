@@ -267,48 +267,91 @@
         }
 
         /* Phase Indicators */
-        .phase-indicators {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            right: 20px;
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-        }
+        .track-area {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
 
-        .phase-indicator {
-            background: rgba(0, 20, 40, 0.9);
-            padding: 10px 15px;
-            border-radius: 10px;
-            border: 2px solid;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            min-width: 120px;
-            backdrop-filter: blur(5px);
-            font-size: 0.9em;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
+/* Phase Panel (holds character cards + stage cards ABOVE the graph) */
+.phase-panel {
+  padding: 14px 14px;
+  background: rgba(0, 10, 25, 0.65);
+  border-radius: 16px;
+  border: 3px solid rgba(0, 170, 255, 0.55);
+  box-shadow: 0 0 20px rgba(0, 170, 255, 0.18);
+  backdrop-filter: blur(6px);
+  overflow: visible; /* allow active glow to show */
+}
 
-        .phase-indicator.active {
+/* Character cards row (now inside the phase panel) */
+.player-stage-display {
+  position: relative;
+  top: auto;
+  left: auto;
+  right: auto;
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;      /* no scrolling; wraps to a second row if needed */
+  overflow: visible;
+  padding: 6px 2px 14px;
+  margin: 0 0 10px;
+}
+
+/* Stage cards row (single line) */
+.phase-indicators {
+  position: relative;
+  top: auto;
+  left: auto;
+  right: auto;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  overflow: visible; /* don't clip active glow */
+}
+.phase-indicator {
+  background: rgba(0, 20, 40, 0.75);
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 2px solid;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  backdrop-filter: blur(5px);
+  font-size: 0.78em;
+  font-weight: bold;
+  transition: all 0.3s;
+  white-space: nowrap;
+  flex: 1 1 0;
+  min-width: 0;
+  justify-content: center;
+}
+.phase-indicator i { font-size: 0.95em; }
+
+.phase-panel .player-stage {
+  padding: 8px;
+  min-width: 105px;
+  max-width: 125px;
+}
+.phase-panel .stage-character {
+  width: 42px;
+  height: 42px;
+  font-size: 1.2em;
+}
+.phase-indicator.active {
             transform: scale(1.1);
             box-shadow: 0 0 20px;
         }
 
         /* Player Character Stage Display */
-        .player-stage-display {
-            position: absolute;
-            top: 80px;
-            left: 20px;
-            right: 20px;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
         .player-stage {
             background: rgba(0, 20, 40, 0.9);
             padding: 12px;
@@ -403,7 +446,82 @@
             font-size: 0.9em;
         }
 
-        /* Game Board Panel */
+        
+
+/* Deck Selector (themed) */
+.deck-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: none;              /* removed blue box */
+  background: transparent;   /* blend with row */
+  box-shadow: none;
+  backdrop-filter: none;
+}
+.deck-selector label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  color: #00ffff;
+  text-shadow: 0 0 8px rgba(0, 255, 255, 0.18);
+  white-space: nowrap;
+  font-size: 0.82em;
+}
+.deck-select-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+.deck-select-wrap::after {
+  content: "\f078"; /* fa-chevron-down */
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  position: absolute;
+  right: 8px;
+  pointer-events: none;
+  color: #00aaff;
+  text-shadow: 0 0 8px rgba(0, 170, 255, 0.25);
+  font-size: 0.75em;
+  opacity: 0.95;
+}
+#deck-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  padding: 6px 28px 6px 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 170, 255, 0.75);
+  background: rgba(0, 0, 0, 0.22);
+  color: #ffffff;
+  font-weight: 800;
+  letter-spacing: 0.1px;
+  font-size: 0.82em;
+  min-width: 135px;
+  box-shadow: 0 0 10px rgba(0, 170, 255, 0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, filter 0.2s ease;
+}
+#deck-select:hover {
+  transform: translateY(-1px);
+  border-color: rgba(0, 255, 255, 0.9);
+  box-shadow: 0 0 14px rgba(0, 255, 255, 0.18);
+  filter: brightness(1.03);
+}
+#deck-select:focus {
+  outline: none;
+  border-color: rgba(255, 170, 0, 0.9);
+  box-shadow: 0 0 0 2px rgba(255, 170, 0, 0.18), 0 0 14px rgba(0, 170, 255, 0.16);
+}
+#deck-select option {
+  background: #0a0a2a;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* Game Board Panel */
         .game-board-panel {
             display: flex;
             flex-direction: column;
@@ -932,21 +1050,23 @@
         <div id="game-board">
             <div class="board-game-layout">
                 <!-- Action Potential Track -->
+<div class="track-area">
+<div class="phase-panel">
+<div class="player-stage-display" id="player-stage-display">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+<div class="phase-indicators" id="phase-indicators">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+</div>
+
                 <div id="action-potential-track">
                     <canvas id="apCanvas"></canvas>
                     <div id="players-on-track"></div>
                     
                     <!-- Phase Indicators -->
-                    <div class="phase-indicators" id="phase-indicators">
-                        <!-- Will be populated by JavaScript -->
-                    </div>
-                    
-                    <!-- Player Character Stage Display -->
-                    <div class="player-stage-display" id="player-stage-display">
-                        <!-- Will be populated by JavaScript -->
-                    </div>
-                    
-                    <!-- Progress Section -->
+<!-- Player Character Stage Display -->
+<!-- Progress Section -->
                     <div id="progress-section">
                         <div class="progress-label">
                             <span><i class="fas fa-wave-square"></i> Action Potential Progress</span>
@@ -971,9 +1091,24 @@
                                 <span>Current Stage:</span>
                                 <strong id="current-stage">Resting</strong>
                             </div>
-                        </div>
+
+  <div class="deck-selector">
+    <label for="deck-select">
+      <i class="fas fa-layer-group"></i> Card Deck
+    </label>
+  <div class="deck-select-wrap">
+    <select id="deck-select" aria-label="Select card deck">
+      <option value="actionPotential">Action Potential</option>
+      <option value="nervousSystem">Nervous System</option>
+    </select>
+  </div>
+</div>
+
+ </div>
                     </div>
                 </div>
+</div>
+
 
                 <!-- Game Board Panel -->
                 <div class="game-board-panel">
@@ -1280,8 +1415,13 @@
         // ============================================
         // FIXED QUESTION DATABASE (No "Both A and B" answers)
         // ============================================
-        const questions = [
-            // Resting stage questions (5 questions)
+        // ============================================
+// QUESTION DECKS (Action Potential + Nervous System)
+// ============================================
+const questionDecks = {
+        // Original question bank renamed as the 'Action Potential' deck
+        actionPotential: [
+        // Resting stage questions (5 questions)
             { question: "What is the resting membrane potential of a neuron?", 
               answers: ["-70 mV", "-55 mV", "+40 mV", "0 mV"], 
               correct: 0, 
@@ -1410,7 +1550,167 @@
               answers: ["They close slowly", "They open rapidly", "They become inactivated", "They reverse direction"], 
               correct: 0, 
               stage: "hyperpolarizing" }
-        ];
+        ],
+
+        // Additional, original questions for Chapter 1 review topics (no textbook text copied)
+        nervousSystem: [
+        { question: "Which statement best describes the central nervous system (CNS)?",
+ answers: ["Brain and spinal cord", "Cranial and spinal nerves", "Ganglia and peripheral nerves", "Sensory receptors only"],
+ correct: 0,
+ stage: "resting" },
+        { question: "Which statement best describes the peripheral nervous system (PNS)?",
+ answers: ["Brain tissue", "Spinal cord", "All neural structures outside brain and spinal cord", "Ventricles and CSF"],
+ correct: 2,
+ stage: "depolarizing" },
+        { question: "In neuroanatomy, a collection of neuronal cell bodies in the CNS is called a:",
+ answers: ["Ganglion", "Nucleus", "Tract", "Fascicle"],
+ correct: 1,
+ stage: "peak" },
+        { question: "A collection of neuronal cell bodies in the PNS is called a:",
+ answers: ["Nucleus", "Ganglion", "Tract", "Gyrus"],
+ correct: 1,
+ stage: "repolarizing" },
+        { question: "A bundle of axons in the CNS is most commonly called a:",
+ answers: ["Tract", "Nerve", "Ganglion", "Sulcus"],
+ correct: 0,
+ stage: "hyperpolarizing" },
+        { question: "A bundle of axons in the PNS is most commonly called a:",
+ answers: ["Tract", "Nerve", "Nucleus", "Cortex"],
+ correct: 1,
+ stage: "resting" },
+        { question: "Which glial cell type forms myelin in the CNS?",
+ answers: ["Schwann cell", "Oligodendrocyte", "Astrocyte", "Microglia"],
+ correct: 1,
+ stage: "depolarizing" },
+        { question: "Which glial cell type forms myelin in the PNS?",
+ answers: ["Schwann cell", "Oligodendrocyte", "Ependymal cell", "Microglia"],
+ correct: 0,
+ stage: "peak" },
+        { question: "Which glial cell type is most associated with immune defense and phagocytosis in the CNS?",
+ answers: ["Astrocyte", "Microglia", "Oligodendrocyte", "Ependymal cell"],
+ correct: 1,
+ stage: "repolarizing" },
+        { question: "Astrocytes are best known for:",
+ answers: ["Producing action potentials", "Supporting neurons and helping maintain the blood–brain barrier", "Forming synaptic vesicles", "Detecting light in the retina"],
+ correct: 1,
+ stage: "hyperpolarizing" },
+        { question: "Gray matter is primarily composed of:",
+ answers: ["Myelinated axon tracts", "Neuronal cell bodies and synapses", "Only glial cells", "Only sensory receptors"],
+ correct: 1,
+ stage: "resting" },
+        { question: "White matter is primarily composed of:",
+ answers: ["Neuronal cell bodies", "Myelinated axons", "Synaptic clefts", "Neurotransmitter vesicles"],
+ correct: 1,
+ stage: "depolarizing" },
+        { question: "Which part of a neuron typically receives most synaptic input?",
+ answers: ["Axon terminal", "Dendrites", "Node of Ranvier", "Myelin sheath"],
+ correct: 1,
+ stage: "peak" },
+        { question: "The axon hillock is most closely associated with:",
+ answers: ["Protein synthesis", "Integration of inputs and initiation of spikes", "Neurotransmitter reuptake", "Myelin production"],
+ correct: 1,
+ stage: "repolarizing" },
+        { question: "A synapse that uses gap junctions for direct current flow is a(n):",
+ answers: ["Chemical synapse", "Electrical synapse", "Neuromuscular junction", "Autonomic synapse"],
+ correct: 1,
+ stage: "hyperpolarizing" },
+        { question: "In a chemical synapse, neurotransmitter is released from:",
+ answers: ["Postsynaptic receptors", "Presynaptic axon terminal", "Node of Ranvier", "Dendritic shaft"],
+ correct: 1,
+ stage: "resting" },
+        { question: "Ionotropic receptors are typically:",
+ answers: ["G-protein coupled and slow", "Ligand-gated ion channels and fast", "Enzymes that synthesize neurotransmitter", "Transporters that clear neurotransmitter"],
+ correct: 1,
+ stage: "depolarizing" },
+        { question: "Metabotropic receptors are typically:",
+ answers: ["Ligand-gated ion channels", "G-protein coupled receptors that modulate signaling", "Voltage-gated sodium channels", "Structural proteins in axons"],
+ correct: 1,
+ stage: "peak" },
+        { question: "Which neurotransmitter is the primary excitatory transmitter in the CNS?",
+ answers: ["GABA", "Glycine", "Glutamate", "Dopamine"],
+ correct: 2,
+ stage: "repolarizing" },
+        { question: "Which neurotransmitter is the primary inhibitory transmitter in the adult brain?",
+ answers: ["Glutamate", "GABA", "Acetylcholine", "Serotonin"],
+ correct: 1,
+ stage: "hyperpolarizing" },
+        { question: "Which neurotransmitter is most associated with neuromuscular junction transmission?",
+ answers: ["Acetylcholine", "GABA", "Glutamate", "Norepinephrine"],
+ correct: 0,
+ stage: "resting" },
+        { question: "Afferent pathways generally carry information:",
+ answers: ["From CNS to muscles", "From sensory receptors toward the CNS", "Only within the brain", "Only within the spinal cord"],
+ correct: 1,
+ stage: "depolarizing" },
+        { question: "Efferent pathways generally carry information:",
+ answers: ["From CNS to effectors (muscles/glands)", "From skin to spinal cord", "From retina to cortex", "Only within peripheral ganglia"],
+ correct: 0,
+ stage: "peak" },
+        { question: "The somatic nervous system primarily controls:",
+ answers: ["Involuntary smooth muscle", "Voluntary skeletal muscle", "Hormone secretion only", "Cardiac pacemaker cells"],
+ correct: 1,
+ stage: "repolarizing" },
+        { question: "The autonomic nervous system primarily controls:",
+ answers: ["Voluntary movement", "Involuntary functions like smooth muscle and glands", "Only sensory input", "Only spinal reflexes"],
+ correct: 1,
+ stage: "hyperpolarizing" },
+        { question: "Which division of the autonomic nervous system is often described as 'fight or flight'?",
+ answers: ["Parasympathetic", "Sympathetic", "Enteric", "Somatic"],
+ correct: 1,
+ stage: "resting" },
+        { question: "Which division of the autonomic nervous system is often described as 'rest and digest'?",
+ answers: ["Sympathetic", "Parasympathetic", "Somatic", "Dorsal root"],
+ correct: 1,
+ stage: "depolarizing" },
+        { question: "How many pairs of cranial nerves are typically described in humans?",
+ answers: ["10", "12", "24", "31"],
+ correct: 1,
+ stage: "peak" },
+        { question: "How many pairs of spinal nerves are typically described in humans?",
+ answers: ["12", "24", "31", "62"],
+ correct: 2,
+ stage: "repolarizing" },
+        { question: "Which major brain division includes the medulla, pons, and midbrain?",
+ answers: ["Cerebellum", "Brainstem", "Diencephalon", "Basal ganglia"],
+ correct: 1,
+ stage: "hyperpolarizing" },
+        { question: "The cerebellum is most strongly associated with:",
+ answers: ["Language comprehension", "Coordination and motor learning", "Primary vision", "Hearing transduction"],
+ correct: 1,
+ stage: "resting" },
+        { question: "The cerebral cortex is primarily responsible for:",
+ answers: ["Simple spinal reflexes", "Higher-order processing such as perception and planning", "Only autonomic output", "CSF production"],
+ correct: 1,
+ stage: "depolarizing" },
+        { question: "Which lobe is most associated with primary somatosensory processing?",
+ answers: ["Frontal lobe", "Parietal lobe", "Temporal lobe", "Occipital lobe"],
+ correct: 1,
+ stage: "peak" },
+        { question: "Which lobe is most associated with primary visual processing?",
+ answers: ["Parietal", "Occipital", "Temporal", "Frontal"],
+ correct: 1,
+ stage: "repolarizing" },
+        { question: "The meninges surrounding the CNS are, from outermost to innermost:",
+ answers: ["Dura → Arachnoid → Pia", "Pia → Arachnoid → Dura", "Arachnoid → Dura → Pia", "Dura → Pia → Arachnoid"],
+ correct: 0,
+ stage: "hyperpolarizing" },
+        { question: "Cerebrospinal fluid (CSF) is most directly associated with:",
+ answers: ["Carrying oxygen in blood", "Mechanical protection and chemical stability around the CNS", "Generating synaptic vesicles", "Producing myelin"],
+ correct: 1,
+ stage: "resting" },
+        { question: "In the spinal cord, dorsal roots primarily contain:",
+ answers: ["Motor efferents", "Sensory afferents", "Only autonomic fibers", "Only interneurons"],
+ correct: 1,
+ stage: "depolarizing" },
+        { question: "In the spinal cord, ventral roots primarily contain:",
+ answers: ["Sensory afferents", "Motor efferents", "Cranial nerve fibers", "Only sympathetic fibers"],
+ correct: 1,
+ stage: "peak" }
+        ]
+};
+
+// Active question list used by the existing game logic
+let questions = questionDecks.actionPotential;
 
         // ============================================
         // MULTIPLAYER SETUP
@@ -1545,11 +1845,14 @@
         // ============================================
         // GAME INITIALIZATION
         // ============================================
-        const canvas = document.getElementById('apCanvas');
+        const GRAPH_LEFT_PADDING = 120; // keep waveform clear of left-side voltage labels
+const canvas = document.getElementById('apCanvas');
         const ctx = canvas.getContext('2d');
 
         function initGame() {
             console.log(`Starting game in ${gameState.gameMode} mode with ${gameState.players.length} players`);
+            // Apply selected card deck
+            setQuestionDeck(gameState.selectedDeck);
             
             resizeCanvas();
             generateRealisticActionPotentialTrack();
@@ -1609,7 +1912,8 @@
         // ============================================
         function generateRealisticActionPotentialTrack() {
             gameState.trackPoints = [];
-            const width = canvas.width;
+            const leftPad = GRAPH_LEFT_PADDING;
+  const width = canvas.width - leftPad;
             const height = canvas.height;
             
             // Set up voltage ranges for realistic action potential
@@ -1640,7 +1944,7 @@
             const restingLength = width * 0.15;
             const restingPoints = 20;
             for (let i = 0; i < restingPoints; i++) {
-                const x = (i / restingPoints) * restingLength;
+                const x = leftPad + (i / restingPoints) * restingLength;
                 const y = voltageToY(restingPotential);
                 gameState.trackPoints.push({ x, y, stage: 'resting' });
             }
@@ -1651,7 +1955,7 @@
             const depolarizationLength = width * 0.1;
             const depolarizationPoints = 15;
             for (let i = 0; i < depolarizationPoints; i++) {
-                const x = depolarizationStartX + (i / depolarizationPoints) * depolarizationLength;
+                const x = leftPad + depolarizationStartX + (i / depolarizationPoints) * depolarizationLength;
                 const progress = i / depolarizationPoints;
                 const voltage = restingPotential + (thresholdPotential - restingPotential) * progress;
                 const y = voltageToY(voltage);
@@ -1664,7 +1968,7 @@
             const rapidDepolLength = width * 0.08;
             const rapidDepolPoints = 12;
             for (let i = 0; i <= rapidDepolPoints; i++) {
-                const x = rapidDepolStartX + (i / rapidDepolPoints) * rapidDepolLength;
+                const x = leftPad + rapidDepolStartX + (i / rapidDepolPoints) * rapidDepolLength;
                 const progress = i / rapidDepolPoints;
                 // Exponential-like curve for rapid depolarization
                 const voltage = thresholdPotential + (peakPotential - thresholdPotential) * Math.pow(progress, 0.7);
@@ -1678,7 +1982,7 @@
             const peakLength = width * 0.05;
             const peakPoints = 8;
             for (let i = 0; i < peakPoints; i++) {
-                const x = peakStartX + (i / peakPoints) * peakLength;
+                const x = leftPad + peakStartX + (i / peakPoints) * peakLength;
                 const y = voltageToY(peakPotential);
                 gameState.trackPoints.push({ x, y, stage: 'peak' });
             }
@@ -1689,7 +1993,7 @@
             const repolarizationLength = width * 0.15;
             const repolarizationPoints = 25;
             for (let i = 0; i <= repolarizationPoints; i++) {
-                const x = repolarizationStartX + (i / repolarizationPoints) * repolarizationLength;
+                const x = leftPad + repolarizationStartX + (i / repolarizationPoints) * repolarizationLength;
                 const progress = i / repolarizationPoints;
                 // S-shaped repolarization
                 const voltage = peakPotential + (restingPotential - peakPotential) * progress;
@@ -1703,7 +2007,7 @@
             const hyperpolarizationLength = width * 0.12;
             const hyperpolarizationPoints = 20;
             for (let i = 0; i <= hyperpolarizationPoints; i++) {
-                const x = hyperpolarizationStartX + (i / hyperpolarizationPoints) * hyperpolarizationLength;
+                const x = leftPad + hyperpolarizationStartX + (i / hyperpolarizationPoints) * hyperpolarizationLength;
                 const progress = i / hyperpolarizationPoints;
                 // Smooth curve to after-hyperpolarization
                 const voltage = restingPotential + (afterHyperpolarization - restingPotential) * Math.sin(progress * Math.PI / 2);
@@ -1717,7 +2021,7 @@
             const recoveryLength = width * 0.2;
             const recoveryPoints = 30;
             for (let i = 0; i <= recoveryPoints; i++) {
-                const x = recoveryStartX + (i / recoveryPoints) * recoveryLength;
+                const x = leftPad + recoveryStartX + (i / recoveryPoints) * recoveryLength;
                 const progress = i / recoveryPoints;
                 const voltage = afterHyperpolarization + (restingPotential - afterHyperpolarization) * progress;
                 const y = voltageToY(voltage);
@@ -1789,23 +2093,42 @@
             
             // Add labels for each stage at appropriate positions
             const stages = [
-                { name: 'Resting', xPercent: 0.1, voltage: -70 },
-                { name: 'Threshold', xPercent: 0.25, voltage: -55 },
-                { name: 'Peak', xPercent: 0.38, voltage: 40 },
-                { name: 'Repolarizing', xPercent: 0.55, voltage: -20 },
-                { name: 'AHP', xPercent: 0.75, voltage: -80 }
-            ];
+    { name: 'Resting', xPercent: 0.10, voltage: -70, xOffset: -35, yOffset: 31 },
+    { name: 'Threshold', xPercent: 0.25, voltage: -55, xOffset: 5 },
+    { name: 'Depolarizing', xPercent: 0.20, targetVoltage: 0, xOffset: -50, yOffset: -2 },
+
+    { name: 'Action Potential Peak', xPercent: 0.38, voltage: 40, yOffset: -10 },
+    { name: 'Repolarizing', xPercent: 0.55, voltage: -20 },
+    { name: 'After-Hyperpolarization', xPercent: 0.75, voltage: -80, xOffset: 50, yOffset: 18 }
+  ];
             
-            stages.forEach(stage => {
+              // Helper: map voltage to Y so labels can align with grid lines
+  const height = canvas.height;
+  const afterHyperpolarization = -80;
+  const peakPotential = 40;
+  const voltageRange = peakPotential - afterHyperpolarization;
+  const pixelsPerMV = (height * 0.6) / voltageRange;
+  const baselineY = height * 0.7;
+  const voltageToY = (voltage) => {
+    const normalizedVoltage = voltage - afterHyperpolarization;
+    return baselineY - (normalizedVoltage * pixelsPerMV);
+  };
+
+stages.forEach(stage => {
                 if (gameState.trackPoints.length > 0) {
                     const x = gameState.trackPoints[Math.floor(gameState.trackPoints.length * stage.xPercent)].x;
-                    const y = gameState.trackPoints[Math.floor(gameState.trackPoints.length * stage.xPercent)].y;
+                    let y = gameState.trackPoints[Math.floor(gameState.trackPoints.length * stage.xPercent)].y;
+      if (typeof stage.targetVoltage === 'number') {
+        y = voltageToY(stage.targetVoltage);
+      }
                     
                     const stageLabel = document.createElement('div');
                     stageLabel.className = 'voltage-label stage-label-element';
                     stageLabel.textContent = stage.name;
-                    stageLabel.style.left = `${x + 10}px`;
-                    stageLabel.style.top = `${y - 25}px`;
+                    const xOffset = stage.xOffset || 0;
+    stageLabel.style.left = `${x + 10 + xOffset}px`;
+                    const yOffset = stage.yOffset || 0;
+    stageLabel.style.top = `${(y - 25) + yOffset}px`;
                     stageLabel.style.color = getStageColor(stage.name.toLowerCase());
                     stageLabel.style.fontWeight = 'bold';
                     stageLabel.style.fontSize = '0.9em';
@@ -1823,9 +2146,12 @@
             switch(stageName) {
                 case 'resting': return '#6666ff';
                 case 'threshold': return '#ffaa00';
+    case 'depolarizing': return '#ffaa00';
                 case 'peak': return '#ff5555';
+    case 'action potential peak': return '#ff5555';
                 case 'repolarizing': return '#55ff55';
                 case 'ahp': return '#aa55ff';
+    case 'after-hyperpolarization': return '#aa55ff';
                 default: return '#ffffff';
             }
         }
@@ -1977,21 +2303,13 @@
             
             // Reset shadow
             ctx.shadowBlur = 0;
-            
-            // Add stage labels at segment midpoints
-            const midIdx = Math.floor((startIdx + endIdx) / 2);
-            if (midIdx < gameState.trackPoints.length) {
-                const point = gameState.trackPoints[midIdx];
-                ctx.fillStyle = stage.color;
-                ctx.font = 'bold 14px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText(stage.title, point.x, point.y - 25);
-            }
+  // (Removed) Stage names were drawn on the waveform here.
         }
 
         function drawThresholdLine() {
             // Draw threshold line at -55 mV
             const width = canvas.width;
+  const leftPad = GRAPH_LEFT_PADDING;
             const height = canvas.height;
             
             const afterHyperpolarization = -80;
@@ -2003,7 +2321,7 @@
             const thresholdY = baselineY - ((-55 - afterHyperpolarization) * pixelsPerMV);
             
             ctx.beginPath();
-            ctx.moveTo(0, thresholdY);
+            ctx.moveTo(leftPad, thresholdY);
             ctx.lineTo(width, thresholdY);
             ctx.strokeStyle = 'rgba(255, 170, 0, 0.3)';
             ctx.lineWidth = 1;
@@ -2015,7 +2333,6 @@
             ctx.fillStyle = '#ffaa00';
             ctx.font = 'italic 12px Arial';
             ctx.textAlign = 'left';
-            ctx.fillText('Threshold (-55 mV)', 10, thresholdY - 5);
         }
 
         // ============================================
@@ -2478,7 +2795,23 @@
         // ============================================
         // QUESTION MANAGEMENT WITH NO REPETITION
         // ============================================
-        function getQuestionIndex(question) {
+        
+        // ============================================
+        // CARD DECK SELECTION
+        // ============================================
+        function setQuestionDeck(deckKey) {
+            const normalized = (deckKey === 'nervousSystem') ? 'nervousSystem' : 'actionPotential';
+            gameState.selectedDeck = normalized;
+            questions = questionDecks[normalized] || questionDecks.actionPotential;
+            // Reset per-deck repetition tracking so indices remain valid
+            gameState.usedQuestions = [];
+            gameState.questionHistory = [];
+            // Update UI control if present
+            const deckSelect = document.getElementById('deck-select');
+            if (deckSelect) deckSelect.value = normalized;
+        }
+
+function getQuestionIndex(question) {
             return questions.findIndex(q => 
                 q.question === question.question && 
                 q.stage === question.stage
@@ -3029,6 +3362,17 @@
         // ============================================
         window.onload = function() {
             console.log("NeuroCoaster loaded with REALISTIC action potential!");
+            // Wire up card deck selector
+            const deckSelect = document.getElementById('deck-select');
+            if (deckSelect) {
+                deckSelect.value = gameState.selectedDeck || 'actionPotential';
+                deckSelect.addEventListener('change', (e) => {
+                    setQuestionDeck(e.target.value);
+                    if (gameState.gameActive) {
+                        loadStageQuestion();
+                    }
+                });
+            }
             
             // Initialize timeout variables
             window.answerTimeout = null;

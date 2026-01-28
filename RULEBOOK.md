@@ -5,9 +5,17 @@
 
 ## Overview
 
-**Action Potential Coaster** is an educational board game that teaches neuroscience concepts through an interactive question-and-answer format. Players ride along an action potential curve by correctly answering questions about neurons, membrane potentials, ion channels, and the nervous system.
+**NeuroCoaster** is an educational roller coaster based game designed to teach the physiology of neuronal action potential and core nervous system concepts. Players advance through the stages of  action potential by correctly answering neuroscience questions. Your character evolves visually and functionally as the membrane potential changes. The goal is to successfully complete the full action potential cycle while earning the highest score.
 
 ---
+
+## Learning Objectives:
+By playing Neurocoaster players will be able to:
+1. Identify and explain the stages of an action potential
+2. Understand ion channels behaviors (Na+, K+)
+3. Relate membrane potential changes to neuronal function
+4. Reinforce nervous system anatomy and physiology concepts
+
 
 ## Game Modes
 
